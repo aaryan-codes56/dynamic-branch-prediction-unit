@@ -1,0 +1,14 @@
+[*] GTKWave save file for tb_two_bit_predictor.vcd
+[dumpfile] "simulation/waveforms/tb_two_bit_predictor.vcd"
+[timestart] 680000
+@28
+tb_two_bit_predictor.clk
+tb_two_bit_predictor.rst
+tb_two_bit_predictor.update_en
+tb_two_bit_predictor.actual_taken
+@22
+tb_two_bit_predictor.lookup_pc[31:0]
+@24
+tb_two_bit_predictor.lookup_state[1:0]
+@28
+tb_two_bit_predictor.predict_taken

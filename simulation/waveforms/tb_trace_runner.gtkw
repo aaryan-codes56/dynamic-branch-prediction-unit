@@ -1,0 +1,21 @@
+[*] GTKWave save file for tb_trace_runner.vcd (make sim-traces dumps the loop trace)
+[dumpfile] "simulation/waveforms/tb_trace_runner.vcd"
+@28
+tb_trace_runner.clk
+tb_trace_runner.rst
+@22
+tb_trace_runner.if_pc[31:0]
+@28
+tb_trace_runner.ex_actual_taken
+tb_trace_runner.pt_s
+@24
+tb_trace_runner.st_1[1:0]
+@28
+tb_trace_runner.pt_1
+tb_trace_runner.fl_1
+@24
+tb_trace_runner.st_2[1:0]
+@28
+tb_trace_runner.pt_2
+tb_trace_runner.fl_2
+tb_trace_runner.hit_2

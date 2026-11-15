@@ -1,0 +1,26 @@
+[*] GTKWave save file for tb_branch_prediction_top.vcd (2-bit instance)
+[dumpfile] "simulation/waveforms/tb_branch_prediction_top.vcd"
+@28
+tb_branch_prediction_top.clk
+tb_branch_prediction_top.rst
+tb_branch_prediction_top.h_two.if_valid
+@22
+tb_branch_prediction_top.h_two.if_pc[31:0]
+@24
+tb_branch_prediction_top.h_two.pred_state[1:0]
+@28
+tb_branch_prediction_top.h_two.pred_taken
+tb_branch_prediction_top.h_two.pred_target_valid
+@22
+tb_branch_prediction_top.h_two.pred_target[31:0]
+tb_branch_prediction_top.h_two.pred_next_pc[31:0]
+@28
+tb_branch_prediction_top.h_two.ex_valid
+@22
+tb_branch_prediction_top.h_two.ex_pc[31:0]
+@28
+tb_branch_prediction_top.h_two.ex_actual_taken
+tb_branch_prediction_top.h_two.ex_dir_mispredict
+tb_branch_prediction_top.h_two.flush
+@22
+tb_branch_prediction_top.h_two.ex_correct_pc[31:0]
