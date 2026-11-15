@@ -1,0 +1,30 @@
+TRACE loop_trace
+PIPE_SUMMARY type=static branches=70 cycles=190 dir_mispredicts=59 flushes=59
+PIPE_SUMMARY type=one_bit branches=70 cycles=114 dir_mispredicts=22 flushes=22
+PIPE_SUMMARY type=two_bit branches=70 cycles=96 dir_mispredicts=13 flushes=13
+TEST_RESULT: PASS tb_branch_prediction_top (4198/4198 checks passed)
+TRACE alternating_trace
+PIPE_SUMMARY type=static branches=60 cycles=122 dir_mispredicts=30 flushes=30
+PIPE_SUMMARY type=one_bit branches=60 cycles=180 dir_mispredicts=60 flushes=60
+PIPE_SUMMARY type=two_bit branches=60 cycles=180 dir_mispredicts=60 flushes=60
+TEST_RESULT: PASS tb_branch_prediction_top (4993/4993 checks passed)
+TRACE mostly_taken
+PIPE_SUMMARY type=static branches=100 cycles=280 dir_mispredicts=90 flushes=90
+PIPE_SUMMARY type=one_bit branches=100 cycles=136 dir_mispredicts=17 flushes=17
+PIPE_SUMMARY type=two_bit branches=100 cycles=128 dir_mispredicts=13 flushes=13
+TEST_RESULT: PASS tb_branch_prediction_top (5735/5735 checks passed)
+TRACE mostly_not_taken
+PIPE_SUMMARY type=static branches=100 cycles=122 dir_mispredicts=10 flushes=10
+PIPE_SUMMARY type=one_bit branches=100 cycles=138 dir_mispredicts=18 flushes=18
+PIPE_SUMMARY type=two_bit branches=100 cycles=124 dir_mispredicts=11 flushes=11
+TEST_RESULT: PASS tb_branch_prediction_top (4136/4136 checks passed)
+TRACE mixed_trace
+PIPE_SUMMARY type=static branches=160 cycles=356 dir_mispredicts=97 flushes=97
+PIPE_SUMMARY type=one_bit branches=160 cycles=300 dir_mispredicts=70 flushes=70
+PIPE_SUMMARY type=two_bit branches=160 cycles=242 dir_mispredicts=41 flushes=41
+TEST_RESULT: PASS tb_branch_prediction_top (9348/9348 checks passed)
+TRACE aliasing_trace
+PIPE_SUMMARY type=static branches=80 cycles=162 dir_mispredicts=40 flushes=40
+PIPE_SUMMARY type=one_bit branches=80 cycles=122 dir_mispredicts=60 flushes=20
+PIPE_SUMMARY type=two_bit branches=80 cycles=122 dir_mispredicts=60 flushes=20
+TEST_RESULT: PASS tb_branch_prediction_top (4098/4098 checks passed)

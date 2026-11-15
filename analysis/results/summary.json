@@ -1,0 +1,717 @@
+{
+  "assumptions": {
+    "base_cpi": 1.0,
+    "branch_fraction": 0.2,
+    "misprediction_penalty_cycles": 2.0,
+    "bht_entries": 16,
+    "btb_entries": 16,
+    "update_model": "immediate (tb_trace_runner)"
+  },
+  "workloads": {
+    "loop_trace": {
+      "static": {
+        "total": 70,
+        "correct": 11,
+        "incorrect": 59,
+        "accuracy_pct": 15.714285714285714,
+        "mispred_rate_pct": 84.28571428571429,
+        "est_cpi": 1.3371428571428572,
+        "flushes_with_btb": 59,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 70,
+        "correct": 48,
+        "incorrect": 22,
+        "accuracy_pct": 68.57142857142857,
+        "mispred_rate_pct": 31.428571428571427,
+        "est_cpi": 1.1257142857142857,
+        "flushes_with_btb": 22,
+        "speedup_vs_static": 1.1878172588832487
+      },
+      "twobit": {
+        "total": 70,
+        "correct": 57,
+        "incorrect": 13,
+        "accuracy_pct": 81.42857142857143,
+        "mispred_rate_pct": 18.571428571428573,
+        "est_cpi": 1.0742857142857143,
+        "flushes_with_btb": 13,
+        "speedup_vs_static": 1.2446808510638299
+      }
+    },
+    "alternating_trace": {
+      "static": {
+        "total": 60,
+        "correct": 30,
+        "incorrect": 30,
+        "accuracy_pct": 50.0,
+        "mispred_rate_pct": 50.0,
+        "est_cpi": 1.2,
+        "flushes_with_btb": 30,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 60,
+        "correct": 0,
+        "incorrect": 60,
+        "accuracy_pct": 0.0,
+        "mispred_rate_pct": 100.0,
+        "est_cpi": 1.4,
+        "flushes_with_btb": 60,
+        "speedup_vs_static": 0.8571428571428572
+      },
+      "twobit": {
+        "total": 60,
+        "correct": 0,
+        "incorrect": 60,
+        "accuracy_pct": 0.0,
+        "mispred_rate_pct": 100.0,
+        "est_cpi": 1.4,
+        "flushes_with_btb": 60,
+        "speedup_vs_static": 0.8571428571428572
+      }
+    },
+    "mostly_taken": {
+      "static": {
+        "total": 100,
+        "correct": 10,
+        "incorrect": 90,
+        "accuracy_pct": 10.0,
+        "mispred_rate_pct": 90.0,
+        "est_cpi": 1.36,
+        "flushes_with_btb": 90,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 100,
+        "correct": 83,
+        "incorrect": 17,
+        "accuracy_pct": 83.0,
+        "mispred_rate_pct": 17.0,
+        "est_cpi": 1.068,
+        "flushes_with_btb": 17,
+        "speedup_vs_static": 1.2734082397003745
+      },
+      "twobit": {
+        "total": 100,
+        "correct": 87,
+        "incorrect": 13,
+        "accuracy_pct": 87.0,
+        "mispred_rate_pct": 13.0,
+        "est_cpi": 1.052,
+        "flushes_with_btb": 13,
+        "speedup_vs_static": 1.2927756653992395
+      }
+    },
+    "mostly_not_taken": {
+      "static": {
+        "total": 100,
+        "correct": 90,
+        "incorrect": 10,
+        "accuracy_pct": 90.0,
+        "mispred_rate_pct": 10.0,
+        "est_cpi": 1.04,
+        "flushes_with_btb": 10,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 100,
+        "correct": 82,
+        "incorrect": 18,
+        "accuracy_pct": 82.0,
+        "mispred_rate_pct": 18.0,
+        "est_cpi": 1.072,
+        "flushes_with_btb": 18,
+        "speedup_vs_static": 0.9701492537313433
+      },
+      "twobit": {
+        "total": 100,
+        "correct": 89,
+        "incorrect": 11,
+        "accuracy_pct": 89.0,
+        "mispred_rate_pct": 11.0,
+        "est_cpi": 1.044,
+        "flushes_with_btb": 11,
+        "speedup_vs_static": 0.9961685823754789
+      }
+    },
+    "mixed_trace": {
+      "static": {
+        "total": 160,
+        "correct": 63,
+        "incorrect": 97,
+        "accuracy_pct": 39.375,
+        "mispred_rate_pct": 60.62499999999999,
+        "est_cpi": 1.2425,
+        "flushes_with_btb": 97,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 160,
+        "correct": 90,
+        "incorrect": 70,
+        "accuracy_pct": 56.25,
+        "mispred_rate_pct": 43.75,
+        "est_cpi": 1.175,
+        "flushes_with_btb": 70,
+        "speedup_vs_static": 1.057446808510638
+      },
+      "twobit": {
+        "total": 160,
+        "correct": 119,
+        "incorrect": 41,
+        "accuracy_pct": 74.375,
+        "mispred_rate_pct": 25.624999999999996,
+        "est_cpi": 1.1025,
+        "flushes_with_btb": 41,
+        "speedup_vs_static": 1.126984126984127
+      }
+    },
+    "aliasing_trace": {
+      "static": {
+        "total": 80,
+        "correct": 40,
+        "incorrect": 40,
+        "accuracy_pct": 50.0,
+        "mispred_rate_pct": 50.0,
+        "est_cpi": 1.2,
+        "flushes_with_btb": 40,
+        "speedup_vs_static": 1.0
+      },
+      "onebit": {
+        "total": 80,
+        "correct": 0,
+        "incorrect": 80,
+        "accuracy_pct": 0.0,
+        "mispred_rate_pct": 100.0,
+        "est_cpi": 1.4,
+        "flushes_with_btb": 40,
+        "speedup_vs_static": 0.8571428571428572
+      },
+      "twobit": {
+        "total": 80,
+        "correct": 0,
+        "incorrect": 80,
+        "accuracy_pct": 0.0,
+        "mispred_rate_pct": 100.0,
+        "est_cpi": 1.4,
+        "flushes_with_btb": 40,
+        "speedup_vs_static": 0.8571428571428572
+      }
+    }
+  },
+  "bht_sweep": {
+    "aliasing_trace": {
+      "16": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        }
+      },
+      "2": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        }
+      },
+      "32": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 79,
+          "incorrect": 1,
+          "accuracy_pct": 98.75,
+          "mispred_rate_pct": 1.25,
+          "est_cpi": 1.005,
+          "flushes_with_btb": 1,
+          "speedup_vs_static": 1.1940298507462688
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 79,
+          "incorrect": 1,
+          "accuracy_pct": 98.75,
+          "mispred_rate_pct": 1.25,
+          "est_cpi": 1.005,
+          "flushes_with_btb": 1,
+          "speedup_vs_static": 1.1940298507462688
+        }
+      },
+      "4": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        }
+      },
+      "64": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 79,
+          "incorrect": 1,
+          "accuracy_pct": 98.75,
+          "mispred_rate_pct": 1.25,
+          "est_cpi": 1.005,
+          "flushes_with_btb": 1,
+          "speedup_vs_static": 1.1940298507462688
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 79,
+          "incorrect": 1,
+          "accuracy_pct": 98.75,
+          "mispred_rate_pct": 1.25,
+          "est_cpi": 1.005,
+          "flushes_with_btb": 1,
+          "speedup_vs_static": 1.1940298507462688
+        }
+      },
+      "8": {
+        "static": {
+          "total": 80,
+          "correct": 40,
+          "incorrect": 40,
+          "accuracy_pct": 50.0,
+          "mispred_rate_pct": 50.0,
+          "est_cpi": 1.2,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        },
+        "twobit": {
+          "total": 80,
+          "correct": 0,
+          "incorrect": 80,
+          "accuracy_pct": 0.0,
+          "mispred_rate_pct": 100.0,
+          "est_cpi": 1.4,
+          "flushes_with_btb": 40,
+          "speedup_vs_static": 0.8571428571428572
+        }
+      }
+    },
+    "mixed_trace": {
+      "16": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 90,
+          "incorrect": 70,
+          "accuracy_pct": 56.25,
+          "mispred_rate_pct": 43.75,
+          "est_cpi": 1.175,
+          "flushes_with_btb": 70,
+          "speedup_vs_static": 1.057446808510638
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 119,
+          "incorrect": 41,
+          "accuracy_pct": 74.375,
+          "mispred_rate_pct": 25.624999999999996,
+          "est_cpi": 1.1025,
+          "flushes_with_btb": 41,
+          "speedup_vs_static": 1.126984126984127
+        }
+      },
+      "2": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 101,
+          "incorrect": 59,
+          "accuracy_pct": 63.125,
+          "mispred_rate_pct": 36.875,
+          "est_cpi": 1.1475,
+          "flushes_with_btb": 60,
+          "speedup_vs_static": 1.0827886710239651
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 83,
+          "incorrect": 77,
+          "accuracy_pct": 51.875,
+          "mispred_rate_pct": 48.125,
+          "est_cpi": 1.1925,
+          "flushes_with_btb": 65,
+          "speedup_vs_static": 1.0419287211740043
+        }
+      },
+      "32": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 90,
+          "incorrect": 70,
+          "accuracy_pct": 56.25,
+          "mispred_rate_pct": 43.75,
+          "est_cpi": 1.175,
+          "flushes_with_btb": 70,
+          "speedup_vs_static": 1.057446808510638
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 119,
+          "incorrect": 41,
+          "accuracy_pct": 74.375,
+          "mispred_rate_pct": 25.624999999999996,
+          "est_cpi": 1.1025,
+          "flushes_with_btb": 41,
+          "speedup_vs_static": 1.126984126984127
+        }
+      },
+      "4": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 92,
+          "incorrect": 68,
+          "accuracy_pct": 57.5,
+          "mispred_rate_pct": 42.5,
+          "est_cpi": 1.17,
+          "flushes_with_btb": 68,
+          "speedup_vs_static": 1.061965811965812
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 120,
+          "incorrect": 40,
+          "accuracy_pct": 75.0,
+          "mispred_rate_pct": 25.0,
+          "est_cpi": 1.1,
+          "flushes_with_btb": 41,
+          "speedup_vs_static": 1.1295454545454544
+        }
+      },
+      "64": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 90,
+          "incorrect": 70,
+          "accuracy_pct": 56.25,
+          "mispred_rate_pct": 43.75,
+          "est_cpi": 1.175,
+          "flushes_with_btb": 70,
+          "speedup_vs_static": 1.057446808510638
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 119,
+          "incorrect": 41,
+          "accuracy_pct": 74.375,
+          "mispred_rate_pct": 25.624999999999996,
+          "est_cpi": 1.1025,
+          "flushes_with_btb": 41,
+          "speedup_vs_static": 1.126984126984127
+        }
+      },
+      "8": {
+        "static": {
+          "total": 160,
+          "correct": 63,
+          "incorrect": 97,
+          "accuracy_pct": 39.375,
+          "mispred_rate_pct": 60.62499999999999,
+          "est_cpi": 1.2425,
+          "flushes_with_btb": 97,
+          "speedup_vs_static": 1.0
+        },
+        "onebit": {
+          "total": 160,
+          "correct": 90,
+          "incorrect": 70,
+          "accuracy_pct": 56.25,
+          "mispred_rate_pct": 43.75,
+          "est_cpi": 1.175,
+          "flushes_with_btb": 70,
+          "speedup_vs_static": 1.057446808510638
+        },
+        "twobit": {
+          "total": 160,
+          "correct": 119,
+          "incorrect": 41,
+          "accuracy_pct": 74.375,
+          "mispred_rate_pct": 25.624999999999996,
+          "est_cpi": 1.1025,
+          "flushes_with_btb": 41,
+          "speedup_vs_static": 1.126984126984127
+        }
+      }
+    }
+  },
+  "pipelined_rtl": {
+    "loop_trace": {
+      "static": {
+        "branches": 70,
+        "cycles": 190,
+        "dir_mispredicts": 59,
+        "flushes": 59
+      },
+      "onebit": {
+        "branches": 70,
+        "cycles": 114,
+        "dir_mispredicts": 22,
+        "flushes": 22
+      },
+      "twobit": {
+        "branches": 70,
+        "cycles": 96,
+        "dir_mispredicts": 13,
+        "flushes": 13
+      }
+    },
+    "alternating_trace": {
+      "static": {
+        "branches": 60,
+        "cycles": 122,
+        "dir_mispredicts": 30,
+        "flushes": 30
+      },
+      "onebit": {
+        "branches": 60,
+        "cycles": 180,
+        "dir_mispredicts": 60,
+        "flushes": 60
+      },
+      "twobit": {
+        "branches": 60,
+        "cycles": 180,
+        "dir_mispredicts": 60,
+        "flushes": 60
+      }
+    },
+    "mostly_taken": {
+      "static": {
+        "branches": 100,
+        "cycles": 280,
+        "dir_mispredicts": 90,
+        "flushes": 90
+      },
+      "onebit": {
+        "branches": 100,
+        "cycles": 136,
+        "dir_mispredicts": 17,
+        "flushes": 17
+      },
+      "twobit": {
+        "branches": 100,
+        "cycles": 128,
+        "dir_mispredicts": 13,
+        "flushes": 13
+      }
+    },
+    "mostly_not_taken": {
+      "static": {
+        "branches": 100,
+        "cycles": 122,
+        "dir_mispredicts": 10,
+        "flushes": 10
+      },
+      "onebit": {
+        "branches": 100,
+        "cycles": 138,
+        "dir_mispredicts": 18,
+        "flushes": 18
+      },
+      "twobit": {
+        "branches": 100,
+        "cycles": 124,
+        "dir_mispredicts": 11,
+        "flushes": 11
+      }
+    },
+    "mixed_trace": {
+      "static": {
+        "branches": 160,
+        "cycles": 356,
+        "dir_mispredicts": 97,
+        "flushes": 97
+      },
+      "onebit": {
+        "branches": 160,
+        "cycles": 300,
+        "dir_mispredicts": 70,
+        "flushes": 70
+      },
+      "twobit": {
+        "branches": 160,
+        "cycles": 242,
+        "dir_mispredicts": 41,
+        "flushes": 41
+      }
+    },
+    "aliasing_trace": {
+      "static": {
+        "branches": 80,
+        "cycles": 162,
+        "dir_mispredicts": 40,
+        "flushes": 40
+      },
+      "onebit": {
+        "branches": 80,
+        "cycles": 122,
+        "dir_mispredicts": 60,
+        "flushes": 20
+      },
+      "twobit": {
+        "branches": 80,
+        "cycles": 122,
+        "dir_mispredicts": 60,
+        "flushes": 20
+      }
+    }
+  },
+  "rtl_vs_reference_mismatches": 0
+}
