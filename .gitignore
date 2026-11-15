@@ -1,0 +1,28 @@
+# Build products (regenerate with make)
+build/
+simulation/logs/
+simulation/waveforms/*.vcd
+*.vvp
+
+# Synthesis logs are large; the *_stat.txt summaries are kept
+synthesis/reports/*.log
+
+# LaTeX intermediates
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+.vscode/
+*.swp
