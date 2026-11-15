@@ -1,0 +1,24 @@
+
+11. Printing statistics.
+
+=== one_bit_predictor ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       60 wires
+      229 wire bits
+       33 public wires
+      164 public wire bits
+        8 ports
+       71 port bits
+      119 cells
+        2   $scopeinfo
+        1   BUFG
+       16   FDRE
+       68   IBUF
+        4   LUT2
+        2   LUT3
+       21   LUT5
+        2   LUT6
+        3   OBUF
+

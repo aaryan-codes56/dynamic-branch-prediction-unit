@@ -1,0 +1,28 @@
+
+12. Printing statistics.
+
+=== branch_prediction_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      554 wires
+     2838 wire bits
+      101 public wires
+     1358 public wire bits
+       21 ports
+      239 port bits
+     1874 cells
+        6   $scopeinfo
+        1   BUFG
+       16   CARRY4
+      960   FDRE
+       16   FDSE
+      134   IBUF
+        2   INV
+       19   LUT2
+      119   LUT3
+       71   LUT4
+      177   LUT5
+      248   LUT6
+      105   OBUF
+

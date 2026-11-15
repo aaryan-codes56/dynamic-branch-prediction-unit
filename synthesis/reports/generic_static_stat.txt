@@ -1,0 +1,28 @@
+
+14. Printing statistics.
+
+=== branch_prediction_top ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     1780 wires
+     3563 wire bits
+      110 public wires
+     1777 public wire bits
+       21 ports
+      239 port bits
+     2752 cells
+      100   $_ANDNOT_
+      309   $_AND_
+       16   $_DFF_P_
+      622   $_MUX_
+      367   $_NAND_
+       71   $_NOR_
+        5   $_NOT_
+      162   $_ORNOT_
+       64   $_OR_
+      928   $_SDFFCE_PN0P_
+       49   $_XNOR_
+       55   $_XOR_
+        4   $scopeinfo
+
