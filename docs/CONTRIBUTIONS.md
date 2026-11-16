@@ -3,51 +3,30 @@
 **Project:** Design and Verification of a Dynamic Branch Prediction Unit Using 1-Bit and 2-Bit
 Saturating Predictors (Project 5, Modern Computer Architecture)
 
-## Team
+## Members and areas of responsibility
 
-| Member | Proposed role | Feature branch |
+| Member | GitHub | Area of responsibility |
 |---|---|---|
-| Aaryan Krishna | Project coordination, architecture, top-level integration, final validation | `feature/architecture` |
-| Pratik Agade | Static and 1-bit predictor, Branch Target Buffer | `feature/static-1bit-predictor` |
-| Raghvendra Singh | 2-bit predictor, Branch History Table, update logic | `feature/two-bit-predictor` |
-| Vedant Satbhai | Testbench development, waveform verification, test automation | `feature/testbench-verification` |
-| Vivek Kumar Raj | Branch traces, performance analysis, technical documentation, report integration | `feature/performance-analysis` |
+| Aaryan Krishna | [@aaryan-codes56](https://github.com/aaryan-codes56) | Project coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis, final validation |
+| Pratik Agade | [@PratikAgade](https://github.com/PratikAgade) | Static and 1-bit predictors, Branch Target Buffer |
+| Raghvendra Singh | [@23raghvendra](https://github.com/23raghvendra) | 2-bit saturating predictor, Branch History Table, update logic |
+| Vedant Satbhai | - | Testbenches and waveform verification |
+| Vivek Kumar Raj | [@viveeeeek13](https://github.com/viveeeeek13) | Branch traces, performance analysis, documentation and report |
+
+## Commit record
+
+| Member | Commit | Contribution |
+|---|---|---|
+| Aaryan Krishna | [352cea3](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/352cea3) ... [6a855a2](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/6a855a2) (7 commits) | Initial implementation of the complete project: RTL (9 modules), testbenches, traces and analysis, synthesis flow, documentation and IEEE report |
+| Raghvendra Singh | [ee36e1e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/ee36e1e) | Second 2-bit predictor with reset state 00 in `tb_two_bit_predictor`; shows 6/12 mispredictions on alternating branches versus 12/12 for reset state 01 |
+| Pratik Agade | [8a4557c](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/8a4557c) | BTB edge-case test for the highest PC (`0xFFFFFFFC`, index 7, all-ones tag) and a same-index tag-mismatch miss in `tb_branch_target_buffer` |
+| Vivek Kumar Raj | [33d205e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/33d205e) | Reproducible plot PDFs (creation timestamp removed) in `analysis/performance_analysis.py`; regenerated plots |
+| Vedant Satbhai | pending | GTKWave waveform screenshots for `docs/TESTING.md` |
 
 ## AI-assistance disclosure
 
-The first complete version of the RTL, testbenches, scripts and documentation in this repository
-was generated on 15 Nov 2026 in a session with **Claude, an AI assistant (Anthropic)**, directed
-by Aaryan Krishna. Claude is a tool, not a team member, and does not appear as a contributor.
-All simulation, analysis and synthesis results were produced by actually running the tools listed
-in `docs/PROJECT_STATUS.md`; none were written by hand.
-
-Each member is responsible for reviewing, understanding, testing and committing the files they
-own (below), and must be able to explain them in the viva. Please keep this disclosure accurate:
-if your institution requires a specific AI-use statement, add it here and in the report.
-
-## Proposed file ownership
-
-| Member | Files |
-|---|---|
-| Aaryan Krishna | `rtl/branch_prediction_top.v`, `rtl/prediction_control.v`, `rtl/misprediction_unit.v`, `Makefile`, `synthesis/`, `docs/ARCHITECTURE.md`, `docs/diagrams/dbpu_architecture.tex`, `README.md`, `docs/PROJECT_STATUS.md`, `PHASE1_SUBMISSION_CHECKLIST.md` |
-| Pratik Agade | `rtl/static_predictor.v`, `rtl/one_bit_predictor.v`, `rtl/branch_target_buffer.v`, `docs/diagrams/one_bit_fsm.tex` |
-| Raghvendra Singh | `rtl/branch_history_table.v`, `rtl/update_logic.v`, `rtl/two_bit_predictor.v`, `docs/diagrams/two_bit_fsm.tex` |
-| Vedant Satbhai | `testbench/*.v`, `simulation/`, `scripts/mutation_test.sh`, `scripts/vcd_to_png.py`, `docs/waveforms/`, `docs/TESTING.md` |
-| Vivek Kumar Raj | `traces/`, `analysis/`, `reports/`, `docs/REFERENCES.md`, `demo/` |
-
-## Contribution status (update with real evidence only)
-
-Status values: **Pending** (not yet reviewed/committed by the member), **Reviewed** (member has
-read, run and understood the files), **Committed** (member committed from their own GitHub
-account; add commit/PR links), **Extended** (member made their own changes; describe them).
-
-| Member | Status | Evidence (commit / PR links) | Own changes made |
-|---|---|---|---|
-| Aaryan Krishna | Committed | Initial import of the complete Phase I project to `main` (15 Nov 2026) | - |
-| Pratik Agade | Pending | - | - |
-| Raghvendra Singh | Pending | - | - |
-| Vedant Satbhai | Pending | - | - |
-| Vivek Kumar Raj | Pending | - | - |
-
-Do not mark a row as Committed or Extended until the commit or pull request exists on GitHub.
-The "Individual Contributions" table in the IEEE report must match this table.
+The project was developed with the help of an AI assistant (Claude, Anthropic) in sessions
+directed by Aaryan Krishna. AI tools are not team members and do not appear as contributors. All simulation, analysis and synthesis
+results in this repository were produced by running the tools in the flow (`make test`,
+`make results`, `make synth`); none were written by hand. Each member is responsible for
+understanding and explaining the parts they own.

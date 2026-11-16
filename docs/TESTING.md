@@ -33,9 +33,9 @@ TESTBENCH                    RESULT DETAILS
 ---------                    ------ -------
 tb_static_predictor          PASS   83/83 checks passed
 tb_one_bit_predictor         PASS   49/49 checks passed
-tb_two_bit_predictor         PASS   69/69 checks passed
+tb_two_bit_predictor         PASS   70/70 checks passed
 tb_branch_history_table      PASS   33/33 checks passed
-tb_branch_target_buffer      PASS   20/20 checks passed
+tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
 
@@ -58,7 +58,7 @@ The test numbers follow the project plan.
 |---|---|---|---|---|---|
 | 1 | Static predictor | `tb_static_predictor` | Reset, loop pattern TTTTTN x3, 64 random PCs/outcomes | `predict_taken = 0` every time | PASS (83 checks) |
 | 2 | 1-bit predictor | `tb_one_bit_predictor` | Reset; PC 0x100: T,T,T,N,N,N,T | Reset NT; NT->T after one T; stays T; flips to N after one N; stays N | PASS (49 checks) |
-| 3 | 2-bit predictor | `tb_two_bit_predictor` | All 4 start states x {T, N}; 5 extra T at 11; 5 extra N at 00 | The 8 transitions of the table; 11 stays 11; 00 stays 00 (no wrap) | PASS (69 checks) |
+| 3 | 2-bit predictor | `tb_two_bit_predictor` | All 4 start states x {T, N}; 5 extra T at 11; 5 extra N at 00; alternating pattern from reset 00 | The 8 transitions of the table; 11 stays 11; 00 stays 00 (no wrap); reset 00 gives 6/12 mispredictions on alternating branches | PASS (70 checks) |
 | 4 | Loop behaviour | `tb_one_bit_predictor`, `tb_two_bit_predictor`, `loop_trace` | TTTTTN executed 3 times | 1-bit: 6 mispredictions (2 per execution). 2-bit: 4 (2 in the first execution, then 1 each) | PASS |
 | 5 | Alternating | `tb_two_bit_predictor`, `alternating_trace` | T,N,T,N... | 2-bit from reset 01 oscillates 01<->10 and misses every branch (12/12) | PASS |
 | 6 | Multiple addresses / aliasing | `tb_one_bit_predictor`, `tb_two_bit_predictor`, `tb_branch_history_table`, `aliasing_trace` | PC 0x100 vs 0x104 (different entries); 0x100 vs 0x140 (same entry) | Separate entries are independent; aliased PCs corrupt each other | PASS |
@@ -66,7 +66,7 @@ The test numbers follow the project plan.
 | 8 | Mixed workload | `mixed_trace` | 5 branches with different behaviour | Accuracy table (section 4) | Measured |
 | 9 | Misprediction detection | `tb_misprediction` | 5 prediction-control cases, 7 resolution cases | Correct `flush`, `dir_mispredict`, `correct_pc`, `pred_next_pc` | PASS (12 checks) |
 | 10 | Reset | all unit testbenches + top | Mid-run reset after training | Every BHT entry back to INIT_STATE; BTB valid bits cleared | PASS |
-| 11 | BTB | `tb_branch_target_buffer` | Miss after reset; allocate; tag conflict; replace; re-target; `update_en = 0`; reset | Hit/miss and target exactly as expected | PASS (20 checks) |
+| 11 | BTB | `tb_branch_target_buffer` | Miss after reset; allocate; tag conflict; replace; re-target; `update_en = 0`; highest PC `0xFFFFFFFC`; reset | Hit/miss and target exactly as expected | PASS (22 checks) |
 | 12 | Top-level integration | `tb_branch_prediction_top` | 42 directed branches + all 6 traces, 3 predictors, pipelined timing | All outputs equal the reference model every cycle; cycle count equals the model | PASS |
 
 ### Test 2 details: 1-bit sequence (from the log)
@@ -93,6 +93,7 @@ ok   [saturate high: 11 + T x5 stays 11] state=11 pred=1
 ok   [saturate low: 00 + N x5 stays 00] state=00 pred=0
 ok   [loop TTTTTN x3] mispredicts=4 (1 per execution after warm-up)
 ok   [alternating x12] mispredicts=12 (worst case: oscillates WNT<->WT)
+ok   [alternating x12, reset 00] mispredicts=6 (right every second branch)
 ```
 The same 8 transitions are also checked through the real BHT (start state, apply outcome,
 read back), not only on the stand-alone `update_logic`.
@@ -135,8 +136,8 @@ testbenches. The real RTL is never modified.
 
 | Injected bug | Detected by |
 |---|---|
-| 2-bit counter wraps 11 -> 00 (no saturation) | `tb_two_bit_predictor` (63/69), `tb_branch_prediction_top` |
-| BTB ignores the tag | `tb_branch_target_buffer` (17/20), `tb_branch_prediction_top` |
+| 2-bit counter wraps 11 -> 00 (no saturation) | `tb_two_bit_predictor` (64/70), `tb_branch_prediction_top` |
+| BTB ignores the tag | `tb_branch_target_buffer` (18/22), `tb_branch_prediction_top` |
 | `flush` raised only on direction error | `tb_misprediction` (10/12), `tb_branch_prediction_top` |
 | BHT index ignores word alignment | `tb_branch_history_table` (25/33) |
 | 2-bit prediction taken from LSB | `tb_two_bit_predictor` |
