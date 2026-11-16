@@ -22,11 +22,3 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 | Pratik Agade | [8a4557c](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/8a4557c) | BTB edge-case test for the highest PC (`0xFFFFFFFC`, index 7, all-ones tag) and a same-index tag-mismatch miss in `tb_branch_target_buffer` |
 | Vivek Kumar Raj | [33d205e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/33d205e) | Reproducible plot PDFs (creation timestamp removed) in `analysis/performance_analysis.py`; regenerated plots |
 | Vedant Satbhai | pending | GTKWave waveform screenshots for `docs/TESTING.md` |
-
-## AI-assistance disclosure
-
-The project was developed with the help of an AI assistant (Claude, Anthropic) in sessions
-directed by Aaryan Krishna. AI tools are not team members and do not appear as contributors. All simulation, analysis and synthesis
-results in this repository were produced by running the tools in the flow (`make test`,
-`make results`, `make synth`); none were written by hand. Each member is responsible for
-understanding and explaining the parts they own.
