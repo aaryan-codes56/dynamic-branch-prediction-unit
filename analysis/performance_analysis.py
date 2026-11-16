@@ -200,7 +200,7 @@ def make_plots(summary, sweep, plot_dir):
         fig.tight_layout()
         for ext in ("png", "pdf"):
             p = os.path.join(plot_dir, f"{fname}.{ext}")
-            fig.savefig(p, dpi=200)
+            fig.savefig(p, dpi=200, metadata={"CreationDate": None} if ext == "pdf" else None)
             files.append(p)
         plt.close(fig)
 
@@ -233,7 +233,7 @@ def make_plots(summary, sweep, plot_dir):
         fig.tight_layout(rect=(0, 0, 1, 0.9))
         for ext in ("png", "pdf"):
             p = os.path.join(plot_dir, f"bht_size_sweep.{ext}")
-            fig.savefig(p, dpi=200)
+            fig.savefig(p, dpi=200, metadata={"CreationDate": None} if ext == "pdf" else None)
             files.append(p)
         plt.close(fig)
     return files
