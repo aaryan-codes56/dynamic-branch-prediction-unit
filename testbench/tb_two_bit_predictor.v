@@ -8,7 +8,8 @@
 //             (d) prediction for all four states,
 //             (e) saturation at 11 and 00 (no wrap-around),
 //             (f) loop TTTTTN behaviour (1 misprediction per execution),
-//             (g) alternating T N T N behaviour,
+//             (g) alternating T N T N behaviour (reset 01 mispredicts 12/12;
+//                 reset 00 mispredicts 6/12 -- also checked here),
 //             (h) independent entries and aliasing,
 //             (i) mid-run reset.
 // =============================================================================
@@ -41,6 +42,17 @@ module tb_two_bit_predictor;
         .actual_taken(actual_taken)
     );
 
+    // Second predictor with INIT_STATE=00 (Strongly Not Taken) to compare reset-state effect
+    wire                predict_taken_00;
+    wire [1:0]          lookup_state_00;
+    two_bit_predictor #(.PC_WIDTH(PC_WIDTH), .ENTRIES(ENTRIES), .INIT_STATE(2'b00)) dut_init00 (
+        .clk(clk), .rst(rst),
+        .lookup_pc(lookup_pc), .predict_taken(predict_taken_00),
+        .lookup_state(lookup_state_00),
+        .update_en(update_en), .update_pc(update_pc),
+        .actual_taken(actual_taken)
+    );
+
     // Stand-alone update_logic instances for exhaustive checking
     reg  [1:0] ul2_cur;  reg ul2_t;  wire [1:0] ul2_next;
     reg        ul1_cur;  reg ul1_t;  wire       ul1_next;
@@ -49,7 +61,7 @@ module tb_two_bit_predictor;
 
     always #5 clk = ~clk;
 
-    integer checks = 0, errors = 0, i, s, t, mispredicts;
+    integer checks = 0, errors = 0, i, s, t, mispredicts, mispredicts_00;
     reg [1:0] expected_next;
 
     function [1:0] ref_next(input [1:0] cur, input taken);
@@ -175,12 +187,13 @@ module tb_two_bit_predictor;
 
         // (g) alternating T N T N ... from reset (WNT): oscillates 01<->10
         do_reset;
-        mispredicts = 0;
+        mispredicts = 0; mispredicts_00 = 0;
         for (i = 0; i < 12; i = i + 1) begin
             @(negedge clk);
             lookup_pc = PC_B; update_pc = PC_B; update_en = 1'b1;
             actual_taken = ((i % 2) == 0);
             #1 if (predict_taken != actual_taken) mispredicts = mispredicts + 1;
+            if (predict_taken_00 != actual_taken) mispredicts_00 = mispredicts_00 + 1;
         end
         checks = checks + 1;
         if (mispredicts !== 12) begin
@@ -188,6 +201,12 @@ module tb_two_bit_predictor;
             $display("  FAIL [alternating x12] mispredicts=%0d expected 12", mispredicts);
         end else
             $display("  ok   [alternating x12] mispredicts=%0d (worst case: oscillates WNT<->WT)", mispredicts);
+        checks = checks + 1;
+        if (mispredicts_00 !== 6) begin
+            errors = errors + 1;
+            $display("  FAIL [alternating x12, reset 00] mispredicts=%0d expected 6", mispredicts_00);
+        end else
+            $display("  ok   [alternating x12, reset 00] mispredicts=%0d (right every second branch)", mispredicts_00);
 
         // (h) independent entries and aliasing
         do_reset;
