@@ -5,7 +5,8 @@
 // Checks    : miss after reset, hit + target after update, tag mismatch on
 //             same index is a miss (tagged BTB), replacement of an entry,
 //             target update of an existing branch, update_en = 0 ignored,
-//             independent entries, reset clears valid bits.
+//             independent entries, highest PC (all-ones tag),
+//             reset clears valid bits.
 // =============================================================================
 `timescale 1ns/1ps
 module tb_branch_target_buffer;
@@ -102,6 +103,11 @@ module tb_branch_target_buffer;
         btb_write(PC_A, 32'hdead_beec, 1'b0);
         expect_miss(PC_A, "update_en=0 ignored (no allocate)");
         expect_hit (PC_C, PC_C_TGT, "update_en=0 ignored (no overwrite)");
+
+        // Edge case: highest possible PC (index 7, all-ones tag)
+        btb_write  (32'hffff_fffc, 32'h0000_0040, 1'b1);
+        expect_hit (32'hffff_fffc, 32'h0000_0040, "highest PC hits (all-ones tag)");
+        expect_miss(32'h0000_001c, "same index 7, other tag misses");
 
         @(negedge clk); rst = 1'b1; @(negedge clk); rst = 1'b0;
         expect_miss(PC_C, "reset clears valid (PC_C)");
