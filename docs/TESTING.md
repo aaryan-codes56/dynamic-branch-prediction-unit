@@ -161,6 +161,9 @@ to Git (they are regenerated in seconds).
   GTKWave screenshots; each image names the VCD it came from.
 
 ### Figure: `wave_predictor_comparison.png` (loop trace, `tb_trace_runner`)
+
+![Predictor Comparison Waveform](waveforms/wave_predictor_comparison.png)
+
 * One branch per clock period (10 ns). For each branch the testbench sets `branch PC`
   just after the falling edge, the predictors answer combinationally, and the state is updated
   at the next **rising** edge.
@@ -173,6 +176,9 @@ to Git (they are regenerated in seconds).
   the **2-bit** predictor (state `10`) predicts T correctly. This is the key difference.
 
 ### Figure: `wave_pipeline_flush.png` (2-bit unit, `tb_branch_prediction_top`)
+
+![Pipeline Flush Waveform](waveforms/wave_pipeline_flush.png)
+
 * `if_pc` is looked up in IF; the same branch appears on `ex_pc` with `ex_valid = 1` two cycles
   later.
 * At 50 ns branch `0x10c` resolves: predicted NT (`pred_state` was `01`), actual T, so
@@ -182,11 +188,17 @@ to Git (they are regenerated in seconds).
   happened yet (realistic delayed update).
 
 ### Figure: `wave_two_bit_transitions.png` (`tb_two_bit_predictor`)
+
+![Two-Bit Predictor State Transitions](waveforms/wave_two_bit_transitions.png)
+
 * After reset the counter is `01`; two taken updates give `10`, `11`; five more taken updates
   keep it at `11` (saturation, no wrap).
 * After the next reset one not-taken update gives `00`; five more keep it at `00`.
 
 ### Figure: `wave_btb.png` (`tb_branch_target_buffer`)
+
+![Branch Target Buffer Waveform](waveforms/wave_btb.png)
+
 * `update_en` pulses write {PC, target}. After the write to `0x104`, a lookup of `0x104` hits
   with target `0xf0`; a lookup of `0x124` (same index, different tag) misses until it replaces
   the entry. Lookups are combinational and are sampled 1 ns after `lookup_pc` changes, so they
