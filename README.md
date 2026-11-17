@@ -1,4 +1,4 @@
-# Dynamic Branch Prediction Unit (DBPU)
+# Dynamic Branch Prediction Unit
 
 **Design and Verification of a Dynamic Branch Prediction Unit Using 1-Bit and 2-Bit Saturating Predictors**
 Modern Computer Architecture, Project 5
@@ -173,7 +173,6 @@ reports/      IEEE report (LaTeX source and PDF)
 | Vedant Satbhai | Testbenches and waveform verification |
 | Vivek Kumar Raj | Traces, performance analysis, documentation and report |
 
-Contribution record: [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
 
 ## References
 
