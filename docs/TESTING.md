@@ -4,7 +4,7 @@ Every result in this file was produced by running the commands shown, using Icar
 on macOS. Re-run them to reproduce. Run all commands from the repository root.
 
 ```bash
-make test                   # all 7 self-checking testbenches
+make test                   # all 8 self-checking testbenches
 make results                # trace sims + BHT sweep + pipelined runs + analysis (needs matplotlib)
 bash scripts/mutation_test.sh   # checks that the testbenches catch injected bugs
 ```
@@ -38,8 +38,9 @@ tb_branch_history_table      PASS   33/33 checks passed
 tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
+tb_parameter_validation      PASS   35/35 checks passed
 
-Summary: 7 passed, 0 failed
+Summary: 8 passed, 0 failed
 ```
 
 Integration testbench on each trace (`make pipeline`): PASS on all six traces
@@ -68,6 +69,7 @@ The test numbers follow the project plan.
 | 10 | Reset | all unit testbenches + top | Mid-run reset after training | Every BHT entry back to INIT_STATE; BTB valid bits cleared | PASS |
 | 11 | BTB | `tb_branch_target_buffer` | Miss after reset; allocate; tag conflict; replace; re-target; `update_en = 0`; highest PC `0xFFFFFFFC`; reset | Hit/miss and target exactly as expected | PASS (22 checks) |
 | 12 | Top-level integration | `tb_branch_prediction_top` | 42 directed branches + all 6 traces, 3 predictors, pipelined timing | All outputs equal the reference model every cycle; cycle count equals the model | PASS |
+| 13 | Parameter validation | `tb_parameter_validation` | BHT and BTB with 1, 2, 4, 8, 16, 32 entries; BTB with 16-, 32- and 64-bit PCs; lowest/highest PCs; PC[1:0] invariance; top level as 1x1 and 32x32 | Correct indexing, hit/miss and predictions for every configuration | PASS (35 checks) |
 
 ### Test 2 details: 1-bit sequence (from the log)
 

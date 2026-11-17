@@ -28,7 +28,8 @@ testbenches act as the IF and EX stages of a five-stage pipeline.
 * Parameterized, untagged Branch History Table (entries, state width, reset value)
 * Direct-mapped, tagged Branch Target Buffer (valid, tag, target)
 * Next-PC prediction, misprediction detection, pipeline flush and corrected PC
-* Seven self-checking testbenches and a pipelined integration testbench
+* Eight self-checking testbenches, including a pipelined integration testbench and a
+  parameter-sweep testbench (table sizes 1-32, 16/32/64-bit PCs)
 * Six loop-oriented BEQ/BNE branch traces; accuracy, misprediction rate and estimated CPI
 * RTL results cross-checked against an independent Python reference model
 * Mutation testing, BHT-size sweep and Yosys synthesis
@@ -107,7 +108,8 @@ tb_branch_history_table      PASS   33/33 checks passed
 tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
-Summary: 7 passed, 0 failed
+tb_parameter_validation      PASS   35/35 checks passed
+Summary: 8 passed, 0 failed
 ```
 
 * The integration testbench runs all three predictors with five-stage timing (lookup in IF,
@@ -173,6 +175,7 @@ reports/      IEEE report (LaTeX source and PDF)
 | Vedant Satbhai | Testbenches and waveform verification |
 | Vivek Kumar Raj | Traces, performance analysis, documentation and report |
 
+Contribution record: [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
 
 ## References
 

@@ -10,7 +10,7 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 | Aaryan Krishna | [@aaryan-codes56](https://github.com/aaryan-codes56) | Project coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis, final validation |
 | Pratik Agade | [@PratikAgade](https://github.com/PratikAgade) | Static and 1-bit predictors, Branch Target Buffer |
 | Raghvendra Singh | [@23raghvendra](https://github.com/23raghvendra) | 2-bit saturating predictor, Branch History Table, update logic |
-| Vedant Satbhai | - | Testbenches and waveform verification, RTL parameter validation and index bounds safety, parameter validation testbench |
+| Vedant Satbhai | [@vedant21-ctr](https://github.com/vedant21-ctr) | Testbenches and waveform verification, RTL parameter validation and index bounds safety, parameter validation testbench |
 | Vivek Kumar Raj | [@viveeeeek13](https://github.com/viveeeeek13) | Branch traces, performance analysis, documentation and report |
 
 ## Commit record
@@ -21,5 +21,6 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 | Raghvendra Singh | [ee36e1e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/ee36e1e) | Second 2-bit predictor with reset state 00 in `tb_two_bit_predictor`; shows 6/12 mispredictions on alternating branches versus 12/12 for reset state 01 |
 | Pratik Agade | [8a4557c](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/8a4557c) | BTB edge-case test for the highest PC (`0xFFFFFFFC`, index 7, all-ones tag) and a same-index tag-mismatch miss in `tb_branch_target_buffer` |
 | Vivek Kumar Raj | [33d205e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/33d205e) | Reproducible plot PDFs (creation timestamp removed) in `analysis/performance_analysis.py`; regenerated plots |
-| Vedant Satbhai | [b4822bd](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/b4822bd) | RTL parameter validation and index bounds safety in BHT, BTB, and top-level modules; comprehensive parameter validation testbench `tb_parameter_validation` (3,317 checks passed) |
-| Vedant Satbhai | 5da7da6 | Waveform verification figures and integration for docs/TESTING.md |
+| Vedant Satbhai | [b4822bd](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/b4822bd) | RTL parameter validation and index bounds safety in BHT, BTB, and top-level modules; parameter validation testbench `tb_parameter_validation` (35 checks; full suite 3,317 checks, all passing) |
+| Vedant Satbhai | [d55d8e6](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/d55d8e6) | README title edit |
+| Vedant Satbhai | [12b3d92](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/12b3d92) | Waveform verification figures embedded in `docs/TESTING.md` |
