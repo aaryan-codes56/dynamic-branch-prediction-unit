@@ -85,7 +85,7 @@ module branch_prediction_top #(
                 .update_en(ex_valid), .update_pc(ex_pc),
                 .actual_taken(ex_actual_taken)
             );
-        end else begin : g_pred
+        end else if (PREDICTOR_TYPE == TYPE_TWO_BIT) begin : g_pred
             two_bit_predictor #(.PC_WIDTH(PC_WIDTH), .ENTRIES(BHT_ENTRIES)) u_predictor (
                 .clk(clk), .rst(rst),
                 .lookup_pc(if_pc), .predict_taken(pred_taken),
@@ -93,6 +93,17 @@ module branch_prediction_top #(
                 .update_en(ex_valid), .update_pc(ex_pc),
                 .actual_taken(ex_actual_taken)
             );
+        end else begin : g_invalid_pred
+            // Explicitly handle invalid PREDICTOR_TYPE without silent fallback.
+            // Drives safe quiescent outputs.
+            assign pred_taken = 1'b0;
+            assign pred_state = 2'b00;
+            // synthesis translate_off
+            initial begin
+                $display("ERROR: [%m] Invalid PREDICTOR_TYPE=%0d. Supported: 0 (static), 1 (one-bit), 2 (two-bit)", PREDICTOR_TYPE);
+                $finish;
+            end
+            // synthesis translate_on
         end
     endgenerate
 

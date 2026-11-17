@@ -13,7 +13,7 @@ IVERILOG=${IVERILOG:-iverilog}
 VVP=${VVP:-vvp}
 TESTS="tb_static_predictor tb_one_bit_predictor tb_two_bit_predictor \
        tb_branch_history_table tb_branch_target_buffer tb_misprediction \
-       tb_branch_prediction_top"
+       tb_branch_prediction_top tb_parameter_validation"
 
 mkdir -p build simulation/logs simulation/waveforms
 pass=0; fail=0

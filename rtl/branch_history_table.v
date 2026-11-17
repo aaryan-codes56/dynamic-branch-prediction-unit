@@ -48,16 +48,22 @@ module branch_history_table #(
 );
 
     // Number of PC bits used to select an entry.
-    localparam INDEX_BITS = $clog2(ENTRIES);
+    // Clamped to minimum 1 for ENTRIES == 1 (where $clog2(1) == 0) to avoid illegal part-selects.
+    localparam INDEX_BITS = (ENTRIES > 1) ? $clog2(ENTRIES) : 1;
     // Instructions are word aligned, so PC bits [1:0] are always 00.
     localparam ALIGN_BITS = 2;
 
-    // State storage
+    // State storage (sized to exactly ENTRIES)
     reg [STATE_BITS-1:0] table_mem [0:ENTRIES-1];
 
-    // Index calculation
-    wire [INDEX_BITS-1:0] lookup_idx = lookup_pc[INDEX_BITS+ALIGN_BITS-1:ALIGN_BITS];
-    wire [INDEX_BITS-1:0] update_idx = update_pc[INDEX_BITS+ALIGN_BITS-1:ALIGN_BITS];
+    // BHT_HIGH clamped to avoid illegal part-selects if index range exceeds PC_WIDTH
+    localparam BHT_HIGH = (INDEX_BITS + ALIGN_BITS - 1 < PC_WIDTH) ?
+                          (INDEX_BITS + ALIGN_BITS - 1) :
+                          ((PC_WIDTH > ALIGN_BITS) ? PC_WIDTH - 1 : ALIGN_BITS);
+
+    // Index calculation: for ENTRIES == 1, index is tied to 0; otherwise extracted from PC.
+    wire [INDEX_BITS-1:0] lookup_idx = (ENTRIES > 1) ? lookup_pc[BHT_HIGH:ALIGN_BITS] : {INDEX_BITS{1'b0}};
+    wire [INDEX_BITS-1:0] update_idx = (ENTRIES > 1) ? update_pc[BHT_HIGH:ALIGN_BITS] : {INDEX_BITS{1'b0}};
 
     // Combinational read ports
     assign lookup_state = table_mem[lookup_idx];
@@ -73,5 +79,27 @@ module branch_history_table #(
             table_mem[update_idx] <= wr_state;
         end
     end
+
+    // Parameter validation (simulation / formal check)
+    // synthesis translate_off
+    initial begin
+        if (ENTRIES < 1 || (ENTRIES & (ENTRIES - 1)) != 0) begin
+            $display("ERROR: [%m] ENTRIES (%0d) must be a power of 2 >= 1 (1, 2, 4, 8, ...)", ENTRIES);
+            $finish;
+        end
+        if (PC_WIDTH <= ALIGN_BITS) begin
+            $display("ERROR: [%m] PC_WIDTH (%0d) must be greater than ALIGN_BITS (%0d)", PC_WIDTH, ALIGN_BITS);
+            $finish;
+        end
+        if (INDEX_BITS + ALIGN_BITS > PC_WIDTH) begin
+            $display("ERROR: [%m] Table index requires bits [%0d:2], which exceeds PC_WIDTH (%0d)", INDEX_BITS + ALIGN_BITS - 1, PC_WIDTH);
+            $finish;
+        end
+        if (STATE_BITS < 1) begin
+            $display("ERROR: [%m] STATE_BITS (%0d) must be >= 1", STATE_BITS);
+            $finish;
+        end
+    end
+    // synthesis translate_on
 
 endmodule
