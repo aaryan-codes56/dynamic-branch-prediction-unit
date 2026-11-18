@@ -8,7 +8,8 @@ A synthesizable Verilog branch prediction unit with a static always-not-taken ba
 Target Buffer and a pipeline flush interface. The three predictors are verified with
 self-checking testbenches and compared on identical branch traces.
 
-IEEE report: [`reports/IEEE_Project_Report.pdf`](reports/IEEE_Project_Report.pdf)
+IEEE report: [`reports/IEEE_Project_Report.pdf`](reports/IEEE_Project_Report.pdf)  
+Demo video: [Google Drive folder](https://drive.google.com/drive/folders/12UvALPxddAPNzJRCkyqhxD6rn5Etck1M)
 
 ## Overview
 
