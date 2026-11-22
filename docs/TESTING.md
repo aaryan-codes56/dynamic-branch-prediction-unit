@@ -4,7 +4,7 @@ Every result in this file was produced by running the commands shown, using Icar
 on macOS. Re-run them to reproduce. Run all commands from the repository root.
 
 ```bash
-make test                   # all 8 self-checking testbenches
+make test                   # all 9 self-checking testbenches
 make results                # trace sims + BHT sweep + pipelined runs + analysis (needs matplotlib)
 bash scripts/mutation_test.sh   # checks that the testbenches catch injected bugs
 ```
@@ -39,8 +39,9 @@ tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
 tb_parameter_validation      PASS   35/35 checks passed
+tb_rv32_pipeline             PASS   5202/5202 checks passed
 
-Summary: 8 passed, 0 failed
+Summary: 9 passed, 0 failed
 ```
 
 Integration testbench on each trace (`make pipeline`): PASS on all six traces
@@ -49,7 +50,7 @@ Integration testbench on each trace (`make pipeline`): PASS on all six traces
 Python cross-check (`make analysis`): **0 mismatches** over 6 traces (570 branches) and
 12 BHT-size sweep runs.
 
-Mutation testing: **7 of 7** injected bugs detected (details in section 5).
+Mutation testing: **12 of 12** injected bugs detected (details in section 5).
 
 ## 3. Test-by-test description
 
@@ -70,6 +71,7 @@ The test numbers follow the project plan.
 | 11 | BTB | `tb_branch_target_buffer` | Miss after reset; allocate; tag conflict; replace; re-target; `update_en = 0`; highest PC `0xFFFFFFFC`; reset | Hit/miss and target exactly as expected | PASS (22 checks) |
 | 12 | Top-level integration | `tb_branch_prediction_top` | 42 directed branches + all 6 traces, 3 predictors, pipelined timing | All outputs equal the reference model every cycle; cycle count equals the model | PASS |
 | 13 | Parameter validation | `tb_parameter_validation` | BHT and BTB with 1, 2, 4, 8, 16, 32 entries; BTB with 16-, 32- and 64-bit PCs; lowest/highest PCs; PC[1:0] invariance; top level as 1x1 and 32x32 | Correct indexing, hit/miss and predictions for every configuration | PASS (35 checks) |
+| 14 | Processor system test | `tb_rv32_pipeline` | Every program in `programs/` on three CPUs (static, 1-bit, 2-bit) | All 31 registers, 256 data-memory words and the instruction count equal the reference ISS; `cycles = instret + 4 + 2*flushes + stalls` | PASS (5202 checks) |
 
 ### Test 2 details: 1-bit sequence (from the log)
 
@@ -145,6 +147,11 @@ testbenches. The real RTL is never modified.
 | 2-bit prediction taken from LSB | `tb_two_bit_predictor` |
 | BHT reset value ignored | `tb_branch_history_table`, `tb_two_bit_predictor` |
 | Redirect without BTB hit | `tb_misprediction`, `tb_branch_prediction_top` |
+| CPU: no EX/MEM forwarding | `tb_rv32_pipeline` (4857/5202) |
+| CPU: no load-use stall | `tb_rv32_pipeline` (5091/5202) |
+| CPU: flush does not squash ID/EX | `tb_rv32_pipeline` (4963/5202) |
+| CPU: no register-file write-through | `tb_rv32_pipeline` (5107/5202) |
+| CPU: branch compares unforwarded rs2 | `tb_rv32_pipeline` (5175/5202) |
 
 Result: `RESULT: all mutants detected`.
 

@@ -37,23 +37,26 @@ Prediction Unit (DBPU) written in synthesizable Verilog HDL. The unit contains a
 Branch History Table (BHT), interchangeable direction predictors (a static always-not-taken
 baseline, a 1-bit last-outcome predictor and a 2-bit saturating-counter predictor), a tagged
 direct-mapped Branch Target Buffer (BTB), next-PC selection logic for the fetch stage, and a
-misprediction unit that raises a pipeline flush and supplies the corrected PC. The design was
-verified with eight self-checking Icarus Verilog testbenches (3317 checks), a pipelined
-integration testbench that compares every output against an independent reference model on six
-workloads, a row-by-row cross-check of all trace simulations against a Python model, and mutation
-testing in which all seven injected bugs were detected. On six synthetic loop-oriented traces fed
+misprediction unit that raises a pipeline flush and supplies the corrected PC. The unit was then
+integrated into the fetch stage of a five-stage RV32I pipeline with forwarding and load-use
+stalls, which executes assembled programs. The design was verified with nine self-checking Icarus
+Verilog testbenches (8519 checks), including a processor test that compares every register and
+memory word with an instruction-set simulator, a row-by-row cross-check of all trace simulations
+against a Python model, and mutation testing in which all twelve injected bugs were detected. On
+six assembled programs, hardware performance counters show the CPI falling from 1.403 with the
+static predictor to 1.185 (1-bit) and 1.147 (2-bit), a 1.22$\times$ speed-up. On six synthetic loop-oriented traces fed
 identically to all predictors, the 2-bit predictor achieved 81.43\,\% accuracy on a nested loop
 (1-bit: 68.57\,\%, static: 15.71\,\%) and 74.38\,\% on a mixed workload (1-bit: 56.25\,\%,
 static: 39.38\,\%), lowering the estimated CPI on the mixed workload from 1.242 to 1.103 under a
 documented CPI model. Alternating and aliasing patterns are shown to defeat both dynamic
 predictors. Yosys synthesis confirms the design is latch-free; mapped to Xilinx 7-series
-primitives the 2-bit unit with BTB uses 634 LUTs and 976 flip-flops (pre-place-and-route
-estimate).
+primitives the 2-bit unit with BTB uses 634 LUTs and 976 flip-flops, and the complete processor
+2352 LUTs, 2619 flip-flops and two block RAMs (pre-place-and-route estimates).
 \end{abstract}
 
 \begin{IEEEkeywords}
 branch prediction, control hazard, saturating counter, branch history table, branch target
-buffer, pipelining, Verilog HDL, verification
+buffer, pipelining, RISC-V, Verilog HDL, verification
 \end{IEEEkeywords}
 
 % -----------------------------------------------------------------------------
@@ -79,10 +82,10 @@ processor''.
 The contributions of this work are: (i) a modular, parameterized and synthesizable Verilog
 implementation of the predictors, BHT, BTB, prediction control and misprediction logic;
 (ii) a verification environment with self-checking unit tests, a pipelined integration test,
-an independent software reference model and mutation testing; and (iii) a reproducible
-trace-driven comparison of prediction accuracy and estimated CPI on identical workloads.
-The unit is standalone: it exposes a pipeline-style interface but is not embedded in a complete
-processor (Section~\ref{sec:conclusion} lists the limitations).
+an independent software reference model and mutation testing; (iii) a reproducible
+trace-driven comparison of prediction accuracy and estimated CPI on identical workloads; and
+(iv) the integration of the unit into a five-stage RV32I pipeline, an assembler and
+instruction-set simulator, and measured CPI on real programs for each predictor.
 
 % -----------------------------------------------------------------------------
 \section{Literature Review}
@@ -126,7 +129,8 @@ always-not-taken baseline, a dynamic 1-bit predictor and a dynamic 2-bit saturat
 predictor; (2) supplies a predicted target through a BTB; (3) learns from the actual outcome
 when the branch resolves; (4) detects mispredictions, raises a flush and provides the correct
 next PC; and (5) is evaluated on identical loop-oriented branch traces by prediction accuracy,
-misprediction rate and estimated CPI, with the three strategies compared fairly.
+misprediction rate and estimated CPI, with the three strategies compared fairly; and (6) is
+integrated into a pipelined RV32I processor to measure its effect on the CPI of real programs.
 
 % -----------------------------------------------------------------------------
 \section{Proposed Solution}
@@ -276,8 +280,11 @@ Module & Responsibility \\
 cells are inferred, and all runs passed. Table~\ref{tab:synth} gives the cell counts after
 mapping to Xilinx 7-series primitives (\texttt{synth\_xilinx}). The flip-flop counts match the
 expected storage exactly: the BTB holds $16\times(1+26+32)=944$ bits and the BHT 16 or 32 bits.
-These are pre-place-and-route estimates; no maximum frequency is reported because no vendor
-place-and-route or timing analysis was run, and the design was not implemented on an FPGA board.
+The complete processor of Section~\ref{sec:cpu} (with the 2-bit unit) maps to 2352 LUTs, 2619
+flip-flops and two RAMB18 block RAMs, which Yosys infers for the instruction and data memories
+because their addresses come from pipeline registers. These are pre-place-and-route estimates; no
+maximum frequency is reported because no place-and-route or timing analysis was run, and the
+design was not implemented on an FPGA board.
 
 \begin{table}[t]
 \caption{Yosys Synthesis (Xilinx 7-Series Mapping, 16-Entry BHT/BTB)}
@@ -293,13 +300,14 @@ Static + BTB & 510 & 944 \\
 2-bit BHT + BTB & 634 & 976 \\
 1-bit predictor only & 29 & 16 \\
 2-bit predictor only & 46 & 32 \\
+RV32I CPU + 2-bit DBPU & 2352 & 2619 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 % -----------------------------------------------------------------------------
 \section{Simulation and Verification}
-\textbf{Unit tests.} Eight self-checking testbenches compare outputs with expected values and
+\textbf{Unit tests.} Nine self-checking testbenches compare outputs with expected values and
 print a PASS/FAIL verdict (Table~\ref{tab:tests}). They cover reset initialisation of every entry,
 the complete 2-bit transition table (checked both on \sig{update_logic} and through the real BHT),
 saturation at 11 and 00 with no wrap-around, the loop pattern TTTTTN (1-bit: 2 mispredictions per
@@ -318,8 +326,8 @@ directed stimulus (3013 checks) and on all six traces.
 flush logged by the trace simulations was recomputed by an independent Python model: zero
 mismatches over 570 branches and twelve BHT-size runs. To show that the tests can actually find
 bugs, a script injects one fault at a time into a copy of the RTL (e.g.\ counter wrap-around, BTB
-tag check removed, flush on direction error only, wrong index bits); all seven mutants were
-detected. Fig.~\ref{fig:wave} is rendered directly from a simulation VCD file.
+tag check removed, flush on direction error only, wrong index bits, and in the processor: no
+forwarding, no load-use stall, flush not squashing ID/EX); all twelve mutants were detected. Fig.~\ref{fig:wave} is rendered directly from a simulation VCD file.
 
 \begin{table}[t]
 \caption{Self-Checking Testbench Results (\texttt{make test})}
@@ -338,6 +346,7 @@ Testbench & Scope & Checks \\
 \sig{tb_misprediction} & Test 9 & 12/12 \\
 \sig{tb_branch_prediction_top} & Test 12 & 3013/3013 \\
 \sig{tb_parameter_validation} & Test 13 & 35/35 \\
+\sig{tb_rv32_pipeline} & Processor & 5202/5202 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -349,6 +358,49 @@ Testbench & Scope & Checks \\
 (80--90\,ns) both dynamic predictors mispredict; the 1-bit state falls to 0 but the 2-bit counter
 only to 10, so at the next loop entry (100--110\,ns) only the 1-bit predictor mispredicts again.}
 \label{fig:wave}
+\end{figure*}
+
+% -----------------------------------------------------------------------------
+\section{Processor Integration}
+\label{sec:cpu}
+To measure the effect of prediction on real programs, the unit was placed in the fetch stage of
+a classic five-stage in-order pipeline~\cite{patterson2020cod} that implements the RV32I
+subset ADD, SUB, AND, OR, XOR, SLT, SLL, SRL, the matching immediate forms, LW, SW, BEQ, BNE and
+ECALL (used as halt)~\cite{waterman2019riscv} (Fig.~\ref{fig:cpu}).
+
+\textbf{Fetch and resolution.} Every cycle the PC is looked up in the DBPU and the next PC is its
+\sig{pred_next_pc}. The prediction travels with the instruction through IF/ID and ID/EX. BEQ and
+BNE are resolved in EX, where the DBPU's misprediction unit compares the predicted and actual next
+PC; on a misprediction \sig{flush} turns the instructions in IF/ID and ID/EX into bubbles and fetch
+restarts at \sig{ex_correct_pc}, a two-cycle penalty.
+
+\textbf{Data hazards.} Results are forwarded from EX/MEM and MEM/WB to the ALU operands, the store
+data and the branch comparator; the register file writes through so that ID reads a value written
+in the same cycle. A load followed by a dependent instruction stalls for one cycle (PC and IF/ID
+held, bubble into ID/EX).
+
+\textbf{Performance counters.} The core counts cycles, retired instructions, resolved branches,
+flushes, direction mispredictions and load-use stalls. Because every flush inserts two bubbles,
+every stall one, and the pipeline needs four cycles to fill,
+\begin{equation}
+\text{cycles} = \text{instret} + 4 + 2\cdot\text{flushes} + \text{stalls}.
+\label{eq:cycles}
+\end{equation}
+
+\textbf{Software and verification.} A small Python assembler builds the programs, and a Python
+instruction-set simulator (ISS) executes them architecturally to produce the expected final state.
+\sig{tb_rv32_pipeline} runs each program on three copies of the core (static, 1-bit, 2-bit) and
+checks all 31 registers, all 256 data-memory words and the instruction count against the ISS, and
+the cycle count against~(\ref{eq:cycles}): 5202 checks, all passing. Six programs were used: a
+nested loop, an array sum (load-use stalls), bubble sort and xorshift parity (data-dependent
+branches), an alternating branch, and a directed hazard test that exercises every forwarding path.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{rv32_pipeline.pdf}
+\caption{Five-stage RV32I pipeline (\texttt{rtl/rv32\_pipeline\_core.v}) with the DBPU in the
+fetch stage. Red: flush and corrected PC on a misprediction; blue: forwarding paths.}
+\label{fig:cpu}
 \end{figure*}
 
 % -----------------------------------------------------------------------------
@@ -456,6 +508,47 @@ and each flush costs two cycles, the loop trace needed 190, 114 and 96 cycles fo
 from the RTL, but the 100\,\% branch density makes them an upper bound on the penalty rather than
 a CPI for real programs.
 
+\textbf{Measured CPI on the processor.} Table~\ref{tab:cpu} and Fig.~\ref{fig:cpu_cpi} give the CPI
+measured by the hardware counters. Over all programs the CPI falls from 1.403 (static) to 1.185
+(1-bit) and 1.147 (2-bit), a speed-up of 1.22$\times$ for the 2-bit unit. The nested loop
+reproduces the trace study exactly (22 and 13 mispredictions, 81.43\,\% 2-bit accuracy), which
+links the two halves of the project. On the alternating program the 2-bit predictor clearly beats
+the 1-bit one, unlike in the synthetic trace: here the pattern starts with \emph{not taken}, so the
+counter moves between 00 and 01 and is right half the time, while the 1-bit predictor is always
+wrong. On xorshift parity, whose branch is effectively random, both dynamic predictors are equal.
+In the array sum both dynamic predictors remove almost all flushes, and the 32 load-use stalls
+become the dominant overhead; the hazard test has only two branches, so the predictor has no
+effect there.
+
+\begin{table}[t]
+\caption{Measured CPI on the RV32I Pipeline (Hardware Counters)}
+\label{tab:cpu}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l r r r r r@{}}
+\toprule
+Program & Instr. & Branches & Static & 1-bit & 2-bit \\
+\midrule
+loop\_nested     & 225 & 70  & 1.542 & 1.213 & \textbf{1.133} \\
+array\_sum       & 392 & 64  & 1.408 & \textbf{1.112} & \textbf{1.112} \\
+bubble\_sort     & 550 & 153 & 1.373 & 1.231 & \textbf{1.184} \\
+xorshift\_parity & 680 & 128 & 1.282 & \textbf{1.109} & 1.112 \\
+alternating      & 227 & 100 & 1.714 & 1.388 & \textbf{1.220} \\
+hazards          & 36  & 2   & 1.250 & 1.250 & 1.250 \\
+\midrule
+All programs     & 2110 & 517 & 1.403 & 1.185 & \textbf{1.147} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{cpu_cpi_comparison.pdf}
+\caption{Measured CPI of each program on the pipeline for the three predictors.}
+\label{fig:cpu_cpi}
+\end{figure}
+
 \textbf{Cost.} The 2-bit predictor alone costs 46 LUTs and 32 flip-flops versus 29 and 16 for the
 1-bit predictor (Table~\ref{tab:synth}); with a BTB the BTB dominates the area. The 2-bit counter
 therefore buys a clear accuracy gain for a very small amount of extra hardware.
@@ -492,16 +585,18 @@ self-checking unit and integration testbenches, an independent reference model a
 testing. On identical traces the 2-bit saturating counter was the most accurate predictor on
 loop-heavy, biased and mixed workloads, at a cost of 17 extra LUTs and 16 extra flip-flops over
 the 1-bit predictor, while alternating and aliased branches exposed the limits of local
-counters.
+counters. Integrated into a five-stage RV32I pipeline and checked against an instruction-set
+simulator, the 2-bit unit lowered the measured CPI of six programs from 1.403 to 1.147.
 
-\textbf{Limitations.} The unit is standalone and is driven by testbenches that model the IF and
-EX stages; it is not integrated into a processor. The traces are synthetic. Only conditional
-direct branches are modelled. Synthesis results are pre-place-and-route estimates without
-timing, and no FPGA hardware run was performed. The CPI values depend on the stated assumptions.
+\textbf{Limitations.} The processor implements a subset of RV32I (no jumps, byte loads or
+multiplication) and the programs are small kernels rather than standard benchmarks. Only
+conditional direct branches are predicted. The trace-study CPI values rely on the stated
+assumptions, while the processor CPI values are measured. Synthesis results are
+pre-place-and-route estimates without timing, and no FPGA hardware run was performed.
 
-\textbf{Future work (Phase II).} Integrate the unit into a five-stage RV32I pipeline and measure
-real CPI; use traces from compiled benchmarks; add global history (gshare) and a tournament
-selector; add return-address prediction; and run place-and-route to obtain timing results.
+\textbf{Future work.} Add global history (gshare) and a tournament selector, JAL/JALR with a
+return-address stack, larger compiled benchmarks, and place-and-route on an FPGA to obtain timing
+results.
 
 % -----------------------------------------------------------------------------
 \begin{thebibliography}{15}

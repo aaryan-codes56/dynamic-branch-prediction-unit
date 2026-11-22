@@ -19,8 +19,9 @@ processor to guess; a wrong guess flushes the wrong-path instructions and costs 
 **misprediction penalty**). The DBPU makes that guess in hardware at fetch time, learns from
 each resolved branch, and raises a flush with the correct next PC when a guess was wrong.
 
-The unit is standalone with a pipeline-style interface (IF lookup, EX resolution); the
-testbenches act as the IF and EX stages of a five-stage pipeline.
+The unit has a pipeline-style interface (IF lookup, EX resolution) and is integrated into the
+fetch stage of a **five-stage RV32I pipeline** that runs assembled programs, so the effect of
+each predictor on CPI is measured, not only estimated.
 
 ## Features
 
@@ -29,10 +30,14 @@ testbenches act as the IF and EX stages of a five-stage pipeline.
 * Parameterized, untagged Branch History Table (entries, state width, reset value)
 * Direct-mapped, tagged Branch Target Buffer (valid, tag, target)
 * Next-PC prediction, misprediction detection, pipeline flush and corrected PC
-* Eight self-checking testbenches, including a pipelined integration testbench and a
+* Nine self-checking testbenches, including a pipelined integration testbench, a processor
+  system test and a
   parameter-sweep testbench (table sizes 1-32, 16/32/64-bit PCs)
 * Six loop-oriented BEQ/BNE branch traces; accuracy, misprediction rate and estimated CPI
 * RTL results cross-checked against an independent Python reference model
+* Five-stage RV32I pipeline (forwarding, load-use stall, branches resolved in EX) with the
+  DBPU in the fetch stage and hardware performance counters
+* Assembler and reference instruction-set simulator; every program run is checked against it
 * Mutation testing, BHT-size sweep and Yosys synthesis
 
 ## Architecture
@@ -51,6 +56,26 @@ testbenches act as the IF and EX stages of a five-stage pipeline.
 | `misprediction_unit` | EX: `flush = (pred_next_pc != actual_next_pc)`, provides `ex_correct_pc` |
 
 Interface, design decisions and all diagrams: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+### Processor integration
+
+![RV32I pipeline with the DBPU](docs/diagrams/rv32_pipeline.png)
+
+`rv32_pipeline_core` is a classic IF/ID/EX/MEM/WB pipeline for the RV32I subset ADD, SUB, AND,
+OR, XOR, SLT, SLL, SRL (and immediate forms), LW, SW, BEQ, BNE and ECALL (halt). The PC is looked
+up in the DBPU every cycle; branches resolve in EX, and a misprediction flushes IF/ID and ID/EX
+(2-cycle penalty). Results are forwarded from EX/MEM and MEM/WB, and a load followed by a
+dependent instruction stalls for one cycle. Performance counters record cycles, retired
+instructions, branches, flushes, direction mispredictions and stalls, with
+`cycles = instret + 4 + 2 x flushes + stalls`.
+
+| Module | Role |
+|---|---|
+| `rv32_pipeline_core` | Pipeline, hazard handling, DBPU connection, performance counters |
+| `rv32_decoder` | Instruction decode and control |
+| `rv32_alu` | ALU (add, sub, and, or, xor, slt, sll, srl) |
+| `rv32_regfile` | 32 x 32 register file with write-through |
+| `rv32_imem` / `rv32_dmem` | 1 KiB instruction and data memories |
 
 ## How the predictors work
 
@@ -89,13 +114,33 @@ Same trace fed to all three predictors, 16-entry BHT (RTL simulation). Estimated
 Full tables (including BHT sweep and pipelined cycle counts):
 [`analysis/results/summary.md`](analysis/results/summary.md).
 
+### Measured CPI on the RV32I pipeline
+
+Hardware performance counters of the simulated CPU; every run checked against the reference ISS.
+
+| Program | Instr. | Static CPI | 1-bit CPI | 2-bit CPI |
+|---|---:|---:|---:|---:|
+| loop_nested | 225 | 1.542 | 1.213 | **1.133** |
+| array_sum | 392 | 1.408 | **1.112** | **1.112** |
+| bubble_sort | 550 | 1.373 | 1.231 | **1.184** |
+| xorshift_parity | 680 | 1.282 | **1.109** | 1.112 |
+| alternating | 227 | 1.714 | 1.388 | **1.220** |
+| hazards | 36 | 1.250 | 1.250 | 1.250 |
+| **All programs** | 2110 | 1.403 | 1.185 | **1.147** |
+
+The 2-bit predictor gives a 1.22x speed-up over the static baseline across all programs.
+Full table: [`analysis/results/cpu_summary.md`](analysis/results/cpu_summary.md).
+
+![Measured CPI](analysis/plots/cpu_cpi_comparison.png)
+
 **Synthesis** (Yosys, Xilinx 7-series mapping, pre-place-and-route; no latches inferred):
 
-| Configuration | LUTs | Flip-flops |
-|---|---:|---:|
-| Static + BTB | 510 | 944 |
-| 1-bit BHT + BTB | 602 | 960 |
-| 2-bit BHT + BTB | 634 | 976 |
+| Configuration | LUTs | Flip-flops | Block RAM |
+|---|---:|---:|---:|
+| Static + BTB | 510 | 944 | 0 |
+| 1-bit BHT + BTB | 602 | 960 | 0 |
+| 2-bit BHT + BTB | 634 | 976 | 0 |
+| RV32I CPU + 2-bit DBPU | 2352 | 2619 | 2 x RAMB18 |
 
 Details: [`synthesis/SYNTHESIS_RESULTS.md`](synthesis/SYNTHESIS_RESULTS.md).
 
@@ -110,14 +155,18 @@ tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
 tb_parameter_validation      PASS   35/35 checks passed
-Summary: 8 passed, 0 failed
+tb_rv32_pipeline             PASS   5202/5202 checks passed
+Summary: 9 passed, 0 failed
 ```
 
 * The integration testbench runs all three predictors with five-stage timing (lookup in IF,
   resolution in EX two cycles later, squash and refetch on flush) and compares every output
   with a reference model, on directed stimulus and on all six traces.
 * Every prediction in the trace simulations matches an independent Python model (0 mismatches).
-* Mutation testing: 7 of 7 deliberately injected bugs are detected.
+* The processor test runs every program on three CPUs (static, 1-bit, 2-bit) and checks all
+  registers, data memory, instruction count and the cycle accounting against the ISS.
+* Mutation testing: 12 of 12 deliberately injected bugs are detected (7 in the predictor,
+  5 in the processor).
 
 Test descriptions and waveform figures: [`docs/TESTING.md`](docs/TESTING.md).
 
@@ -145,6 +194,8 @@ make test                            # run all self-checking testbenches
 make sim  TB=tb_two_bit_predictor    # run one testbench
 make wave TB=tb_two_bit_predictor    # run one testbench and open GTKWave
 make traces                          # regenerate the branch traces (deterministic)
+make programs                        # assemble programs/*.s, compute reference results (ISS)
+make cpu                             # run all programs on the RV32I CPU, CPI table and plot
 make results                         # trace simulations, BHT sweep, pipelined runs, analysis, plots
 make waves                           # render waveform figures from the VCD files
 make synth                           # Yosys synthesis of all three configurations
@@ -155,13 +206,14 @@ bash scripts/mutation_test.sh        # mutation testing
 ## Repository structure
 
 ```
-rtl/          Verilog RTL (9 modules)
+rtl/          Verilog RTL: predictor (9 modules) and RV32I pipeline (rv32_*.v)
+programs/     RV32I assembly programs (built into programs/build/ by make programs)
 testbench/    self-checking testbenches and the trace runner
 simulation/   test scripts and GTKWave save files (VCDs are generated here)
 traces/       trace generator and six branch traces (CSV)
 analysis/     performance analysis script, results and plots
 synthesis/    Yosys flow, summary and raw statistics
-scripts/      waveform renderer and mutation testing
+scripts/      RV32I assembler + ISS, program builder, waveform renderer, mutation testing
 docs/         architecture, testing, references, contributions, diagrams, waveforms
 reports/      IEEE report (LaTeX source and PDF)
 ```
@@ -187,10 +239,10 @@ A. J. Smith, "Branch prediction strategies and branch target buffer design," *IE
 
 ## Limitations and future work
 
-Standalone unit (not integrated into a processor), synthetic traces, conditional direct branches
-only, and synthesis without timing (no Fmax). Future work: integration into a five-stage RV32I
-pipeline, benchmark traces, gshare/tournament predictors, a return-address stack, and
-place-and-route timing on an FPGA.
+The processor implements an RV32I subset (no jumps, byte loads or multiplication), the programs
+are small kernels, only conditional direct branches are predicted, and synthesis has no timing
+results (no Fmax). Future work: gshare/tournament predictors, JAL/JALR with a return-address
+stack, larger benchmarks, and place-and-route timing on an FPGA.
 
 ## License
 

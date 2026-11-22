@@ -268,10 +268,37 @@ The rendered waveform `docs/waveforms/wave_pipeline_flush.png` shows this sequen
 | Synchronous reset, flip-flop storage | Simple, portable and easy to verify; tables are small (16 entries) |
 | `flush` based on next-PC comparison | Catches direction errors and also BTB miss / wrong-target cases |
 
-## 12. Limitations
+## 12. Processor integration (Phase II)
 
-* Standalone unit: no processor pipeline, instruction memory or decoder is implemented. The
-  testbenches play the role of the IF and EX stages.
+![RV32I pipeline](diagrams/rv32_pipeline.png)
+
+`rtl/rv32_pipeline_core.v` places `branch_prediction_top` in the fetch stage of a classic
+five-stage RV32I pipeline (subset: ADD, SUB, AND, OR, XOR, SLT, SLL, SRL and their immediate forms,
+LW, SW, BEQ, BNE, ECALL as halt).
+
+| Aspect | Implementation |
+|---|---|
+| Fetch | `if_pc = PC` every cycle; next PC = `pred_next_pc` (or held on a stall, or `ex_correct_pc` on a flush) |
+| Prediction carried | `pred_taken`, `pred_next_pc` stored in IF/ID and ID/EX, returned to the DBPU as `ex_pred_*` |
+| Branch resolution | EX: `ex_valid = branch in EX`, outcome from the forwarded operands, target = PC + imm |
+| Misprediction | DBPU `flush` turns IF/ID and ID/EX into bubbles; fetch restarts at `ex_correct_pc` (2 cycles) |
+| Forwarding | EX/MEM -> EX and MEM/WB -> EX for ALU operands, store data and branch operands |
+| WB -> ID | register file write-through |
+| Load-use hazard | 1-cycle stall: PC and IF/ID held, bubble into ID/EX |
+| Memories | 1 KiB instruction memory (programming port) and 1 KiB data memory |
+| Halt | ECALL reaching WB sets `halted`; all state freezes |
+| Counters | cycles, instret, branches, flushes, direction mispredictions, stalls |
+
+Cycle accounting: every flush inserts 2 bubbles, every stall 1, and the pipeline needs 4 cycles
+to fill, so `cycles = instret + 4 + 2 x flushes + stalls`; the testbench checks this for every run.
+
+Programs are written in assembly (`programs/*.s`), assembled by `scripts/rv32.py`, and executed by
+the same file's instruction-set simulator to obtain the expected registers and memory.
+
+## 13. Limitations
+
+* The processor implements a subset of RV32I (no JAL/JALR, byte/halfword accesses or
+  multiplication); programs are small kernels.
 * Branch traces are synthetic (generated from small loop programs), not captured from a real CPU.
 * Only conditional direct branches (BEQ/BNE) are modelled; no JAL/JALR, return-address stack or
   indirect-target prediction.
