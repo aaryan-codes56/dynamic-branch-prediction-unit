@@ -32,7 +32,7 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 | Aaryan Krishna | [654ae4b](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/654ae4b) ... [a59a4f1](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/a59a4f1) (5 commits) | 5-stage RV32I pipeline with the DBPU, assembler and reference ISS, six benchmark programs, processor system test (`tb_rv32_pipeline`), CPU analysis and synthesis, documentation and report |
 | Vedant Satbhai | [6cedbdf](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/6cedbdf) | GitHub Actions continuous integration: runs all testbenches, mutation tests and the results pipeline on every push |
 | Raghvendra Singh | [18ebc19](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/18ebc19) | Maximum-search benchmark program (`programs/max_search.s`, data-dependent branch) |
-| Pratik Agade | [5fa3fe8](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/5fa3fe8) | Fibonacci benchmark program (`programs/fibonacci.s`) |
-| Vivek Kumar Raj | [0baeb6e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/0baeb6e) | Branch fraction and flush-penalty columns in the processor CPI analysis |
-| Aaryan Krishna | (this update) | ALU unit testbench (`tb_rv32_alu`), final results with all eight programs |
+| Pratik Agade | [4c0f626](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/4c0f626) | Fibonacci benchmark program (`programs/fibonacci.s`) |
+| Vivek Kumar Raj | [abba13c](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/abba13c) | Branch fraction and flush-penalty columns in the processor CPI analysis |
+| Aaryan Krishna | [ca911ac](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/ca911ac), [16ba0cb](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/16ba0cb) | ALU unit testbench (`tb_rv32_alu`), final results with all eight programs |
 
