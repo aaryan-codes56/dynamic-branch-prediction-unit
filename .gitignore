@@ -1,5 +1,6 @@
 # Build products (regenerate with make)
 build/
+programs/build/
 simulation/logs/
 simulation/waveforms/*.vcd
 *.vvp
