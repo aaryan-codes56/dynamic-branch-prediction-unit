@@ -7,17 +7,20 @@ Configuration: PC_WIDTH = 32, BHT_ENTRIES = 16, BTB_ENTRIES = 16.
 reported because no vendor place-and-route / static timing analysis was run, and the design
 has not been implemented on a physical FPGA.
 
-| Configuration | LUTs | Flip-flops | CARRY4 | MUXF7/F8 |
-|---|---:|---:|---:|---:|
-| Static (always NT) + BTB | 510 | 944 | 16 | 0 |
-| 1-bit BHT + BTB | 602 | 960 | 16 | 0 |
-| 2-bit BHT + BTB | 634 | 976 | 16 | 0 |
-| 1-bit predictor only | 29 | 16 | 0 | 0 |
-| 2-bit predictor only | 46 | 32 | 0 | 0 |
+| Configuration | LUTs | Flip-flops | CARRY4 | MUXF7/F8 | Block RAM (RAMB18) |
+|---|---:|---:|---:|---:|---:|
+| Static (always NT) + BTB | 510 | 944 | 16 | 0 | 0 |
+| 1-bit BHT + BTB | 602 | 960 | 16 | 0 | 0 |
+| 2-bit BHT + BTB | 634 | 976 | 16 | 0 | 0 |
+| 1-bit predictor only | 29 | 16 | 0 | 0 | 0 |
+| 2-bit predictor only | 46 | 32 | 0 | 0 | 0 |
+| RV32I 5-stage CPU + 2-bit DBPU | 2352 | 2619 | 91 | 3 | 2 |
 
 Expected storage (flip-flops):
 - BTB: 16 entries x (1 valid + 26 tag + 32 target) = 944 bits
 - 1-bit BHT: 16 x 1 = 16 bits; 2-bit BHT: 16 x 2 = 32 bits
+- CPU: register file 31 x 32 bits, DBPU, pipeline registers and six 32-bit performance counters;
+  the 1 KiB instruction and data memories are mapped to block RAM (their addresses come from registers).
 
 Latch check: the synthesis script asserts that no latch cells ($dlatch, $_DLATCH_*, LDCE, LDPE)
 are present; all runs passed this check.

@@ -1,0 +1,30 @@
+
+18. Printing statistics.
+
+=== rv32_pipeline_core ===
+
+        +----------Local Count, excluding submodules.
+        | 
+     2380 wires
+     8862 wire bits
+      157 public wires
+     2782 public wire bits
+       12 ports
+      260 port bits
+     5344 cells
+       12   $scopeinfo
+        1   BUFG
+       91   CARRY4
+     2603   FDRE
+       16   FDSE
+       67   IBUF
+        4   INV
+      126   LUT2
+      225   LUT3
+      534   LUT4
+      794   LUT5
+      673   LUT6
+        3   MUXF7
+      193   OBUF
+        2   RAMB18E1
+

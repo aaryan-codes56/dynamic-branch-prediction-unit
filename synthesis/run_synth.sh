@@ -52,5 +52,16 @@ for m in one_bit_predictor two_bit_predictor; do
     " > /dev/null
     echo "== $m alone: reports in $OUT/xilinx_${m}_stat.txt"
 done
+# Phase II: complete 5-stage RV32I CPU with the 2-bit DBPU
+yosys -q -l "$OUT/xilinx_rv32_cpu.log" -p "
+    read_verilog -sv $RTL
+    hierarchy -check -top rv32_pipeline_core
+    proc
+    select -assert-none t:\$dlatch t:\$adlatch t:\$dlatchsr
+    synth_xilinx -top rv32_pipeline_core -flatten
+    select -assert-none t:LDCE t:LDPE
+    tee -o $OUT/xilinx_rv32_cpu_stat.txt stat
+" > /dev/null
+echo "== rv32_pipeline_core (CPU + 2-bit DBPU): no latches; reports in $OUT/xilinx_rv32_cpu_stat.txt"
 python3 synthesis/summarize.py
 echo "Synthesis completed for all configurations."
