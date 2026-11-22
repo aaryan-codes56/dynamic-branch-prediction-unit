@@ -105,6 +105,41 @@
         "speedup": 1.1597542242703534
       }
     },
+    "fibonacci": {
+      "static": {
+        "cycles": 174,
+        "instret": 136,
+        "branches": 18,
+        "flushes": 17,
+        "dir_mispredicts": 17,
+        "stalls": 0,
+        "cpi": 1.2794117647058822,
+        "accuracy_pct": 5.555555555555558,
+        "speedup": 1.0
+      },
+      "one_bit": {
+        "cycles": 144,
+        "instret": 136,
+        "branches": 18,
+        "flushes": 2,
+        "dir_mispredicts": 2,
+        "stalls": 0,
+        "cpi": 1.0588235294117647,
+        "accuracy_pct": 88.88888888888889,
+        "speedup": 1.2083333333333333
+      },
+      "two_bit": {
+        "cycles": 144,
+        "instret": 136,
+        "branches": 18,
+        "flushes": 2,
+        "dir_mispredicts": 2,
+        "stalls": 0,
+        "cpi": 1.0588235294117647,
+        "accuracy_pct": 88.88888888888889,
+        "speedup": 1.2083333333333333
+      }
+    },
     "hazards": {
       "static": {
         "cycles": 45,
@@ -175,6 +210,41 @@
         "speedup": 1.3607843137254902
       }
     },
+    "max_search": {
+      "static": {
+        "cycles": 360,
+        "instret": 259,
+        "branches": 46,
+        "flushes": 41,
+        "dir_mispredicts": 41,
+        "stalls": 15,
+        "cpi": 1.38996138996139,
+        "accuracy_pct": 10.869565217391308,
+        "speedup": 1.0
+      },
+      "one_bit": {
+        "cycles": 292,
+        "instret": 259,
+        "branches": 46,
+        "flushes": 7,
+        "dir_mispredicts": 7,
+        "stalls": 15,
+        "cpi": 1.1274131274131274,
+        "accuracy_pct": 84.78260869565217,
+        "speedup": 1.2328767123287672
+      },
+      "two_bit": {
+        "cycles": 292,
+        "instret": 259,
+        "branches": 46,
+        "flushes": 7,
+        "dir_mispredicts": 7,
+        "stalls": 15,
+        "cpi": 1.1274131274131274,
+        "accuracy_pct": 84.78260869565217,
+        "speedup": 1.2328767123287672
+      }
+    },
     "xorshift_parity": {
       "static": {
         "cycles": 872,
@@ -213,31 +283,31 @@
   },
   "totals": {
     "static": {
-      "cycles": 2960,
-      "instret": 2110,
-      "flushes": 373,
-      "stalls": 80,
-      "branches": 517,
-      "cpi": 1.4028436018957346,
+      "cycles": 3494,
+      "instret": 2505,
+      "flushes": 431,
+      "stalls": 95,
+      "branches": 581,
+      "cpi": 1.394810379241517,
       "speedup": 1.0
     },
     "one_bit": {
-      "cycles": 2500,
-      "instret": 2110,
-      "flushes": 143,
-      "stalls": 80,
-      "branches": 517,
-      "cpi": 1.1848341232227488,
-      "speedup": 1.184
+      "cycles": 2936,
+      "instret": 2505,
+      "flushes": 152,
+      "stalls": 95,
+      "branches": 581,
+      "cpi": 1.172055888223553,
+      "speedup": 1.1900544959128065
     },
     "two_bit": {
-      "cycles": 2420,
-      "instret": 2110,
-      "flushes": 103,
-      "stalls": 80,
-      "branches": 517,
-      "cpi": 1.146919431279621,
-      "speedup": 1.2231404958677685
+      "cycles": 2856,
+      "instret": 2505,
+      "flushes": 112,
+      "stalls": 95,
+      "branches": 581,
+      "cpi": 1.1401197604790418,
+      "speedup": 1.223389355742297
     }
   }
 }

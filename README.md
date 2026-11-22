@@ -1,5 +1,7 @@
 # Dynamic Branch Prediction Unit
 
+[![CI](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/actions/workflows/ci.yml/badge.svg)](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/actions/workflows/ci.yml)
+
 **Design and Verification of a Dynamic Branch Prediction Unit Using 1-Bit and 2-Bit Saturating Predictors**
 Modern Computer Architecture, Project 5
 
@@ -30,8 +32,8 @@ each predictor on CPI is measured, not only estimated.
 * Parameterized, untagged Branch History Table (entries, state width, reset value)
 * Direct-mapped, tagged Branch Target Buffer (valid, tag, target)
 * Next-PC prediction, misprediction detection, pipeline flush and corrected PC
-* Nine self-checking testbenches, including a pipelined integration testbench, a processor
-  system test and a
+* Ten self-checking testbenches, including a pipelined integration testbench, a processor
+  system test, an ALU unit test and a
   parameter-sweep testbench (table sizes 1-32, 16/32/64-bit PCs)
 * Six loop-oriented BEQ/BNE branch traces; accuracy, misprediction rate and estimated CPI
 * RTL results cross-checked against an independent Python reference model
@@ -126,7 +128,9 @@ Hardware performance counters of the simulated CPU; every run checked against th
 | xorshift_parity | 680 | 1.282 | **1.109** | 1.112 |
 | alternating | 227 | 1.714 | 1.388 | **1.220** |
 | hazards | 36 | 1.250 | 1.250 | 1.250 |
-| **All programs** | 2110 | 1.403 | 1.185 | **1.147** |
+| fibonacci | 136 | 1.279 | **1.059** | **1.059** |
+| max_search | 259 | 1.390 | **1.127** | **1.127** |
+| **All programs** | 2505 | 1.395 | 1.172 | **1.140** |
 
 The 2-bit predictor gives a 1.22x speed-up over the static baseline across all programs.
 Full table: [`analysis/results/cpu_summary.md`](analysis/results/cpu_summary.md).
@@ -155,8 +159,9 @@ tb_branch_target_buffer      PASS   22/22 checks passed
 tb_misprediction             PASS   12/12 checks passed
 tb_branch_prediction_top     PASS   3013/3013 checks passed
 tb_parameter_validation      PASS   35/35 checks passed
-tb_rv32_pipeline             PASS   5202/5202 checks passed
-Summary: 9 passed, 0 failed
+tb_rv32_pipeline             PASS   6936/6936 checks passed
+tb_rv32_alu                  PASS   840/840 checks passed
+Summary: 10 passed, 0 failed
 ```
 
 * The integration testbench runs all three predictors with five-stage timing (lookup in IF,
@@ -216,17 +221,18 @@ synthesis/    Yosys flow, summary and raw statistics
 scripts/      RV32I assembler + ISS, program builder, waveform renderer, mutation testing
 docs/         architecture, testing, references, contributions, diagrams, waveforms
 reports/      IEEE report (LaTeX source and PDF)
+.github/      continuous integration (runs the tests on every push)
 ```
 
 ## Team
 
 | Member | Area |
 |---|---|
-| Aaryan Krishna | Coordination, architecture, integration, final validation |
-| Pratik Agade | Static and 1-bit predictors, Branch Target Buffer |
-| Raghvendra Singh | 2-bit predictor, Branch History Table, update logic |
-| Vedant Satbhai | Testbenches and waveform verification |
-| Vivek Kumar Raj | Traces, performance analysis, documentation and report |
+| Aaryan Krishna | Coordination, architecture, integration, RV32I pipeline, final validation |
+| Pratik Agade | Static and 1-bit predictors, Branch Target Buffer, Fibonacci benchmark |
+| Raghvendra Singh | 2-bit predictor, Branch History Table, update logic, maximum-search benchmark |
+| Vedant Satbhai | Testbenches, waveform verification, parameter validation, continuous integration |
+| Vivek Kumar Raj | Traces, performance analysis, processor CPI analysis, documentation and report |
 
 Contribution record: [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
 

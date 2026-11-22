@@ -39,12 +39,12 @@ baseline, a 1-bit last-outcome predictor and a 2-bit saturating-counter predicto
 direct-mapped Branch Target Buffer (BTB), next-PC selection logic for the fetch stage, and a
 misprediction unit that raises a pipeline flush and supplies the corrected PC. The unit was then
 integrated into the fetch stage of a five-stage RV32I pipeline with forwarding and load-use
-stalls, which executes assembled programs. The design was verified with nine self-checking Icarus
-Verilog testbenches (8519 checks), including a processor test that compares every register and
+stalls, which executes assembled programs. The design was verified with ten self-checking Icarus
+Verilog testbenches (11093 checks), including a processor test that compares every register and
 memory word with an instruction-set simulator, a row-by-row cross-check of all trace simulations
 against a Python model, and mutation testing in which all twelve injected bugs were detected. On
-six assembled programs, hardware performance counters show the CPI falling from 1.403 with the
-static predictor to 1.185 (1-bit) and 1.147 (2-bit), a 1.22$\times$ speed-up. On six synthetic loop-oriented traces fed
+eight assembled programs, hardware performance counters show the CPI falling from 1.395 with the
+static predictor to 1.172 (1-bit) and 1.140 (2-bit), a 1.22$\times$ speed-up. On six synthetic loop-oriented traces fed
 identically to all predictors, the 2-bit predictor achieved 81.43\,\% accuracy on a nested loop
 (1-bit: 68.57\,\%, static: 15.71\,\%) and 74.38\,\% on a mixed workload (1-bit: 56.25\,\%,
 static: 39.38\,\%), lowering the estimated CPI on the mixed workload from 1.242 to 1.103 under a
@@ -307,7 +307,7 @@ RV32I CPU + 2-bit DBPU & 2352 & 2619 \\
 
 % -----------------------------------------------------------------------------
 \section{Simulation and Verification}
-\textbf{Unit tests.} Nine self-checking testbenches compare outputs with expected values and
+\textbf{Unit tests.} Ten self-checking testbenches compare outputs with expected values and
 print a PASS/FAIL verdict (Table~\ref{tab:tests}). They cover reset initialisation of every entry,
 the complete 2-bit transition table (checked both on \sig{update_logic} and through the real BHT),
 saturation at 11 and 00 with no wrap-around, the loop pattern TTTTTN (1-bit: 2 mispredictions per
@@ -346,7 +346,8 @@ Testbench & Scope & Checks \\
 \sig{tb_misprediction} & Test 9 & 12/12 \\
 \sig{tb_branch_prediction_top} & Test 12 & 3013/3013 \\
 \sig{tb_parameter_validation} & Test 13 & 35/35 \\
-\sig{tb_rv32_pipeline} & Processor & 5202/5202 \\
+\sig{tb_rv32_pipeline} & Processor & 6936/6936 \\
+\sig{tb_rv32_alu} & Processor ALU & 840/840 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -391,9 +392,11 @@ every stall one, and the pipeline needs four cycles to fill,
 instruction-set simulator (ISS) executes them architecturally to produce the expected final state.
 \sig{tb_rv32_pipeline} runs each program on three copies of the core (static, 1-bit, 2-bit) and
 checks all 31 registers, all 256 data-memory words and the instruction count against the ISS, and
-the cycle count against~(\ref{eq:cycles}): 5202 checks, all passing. Six programs were used: a
-nested loop, an array sum (load-use stalls), bubble sort and xorshift parity (data-dependent
-branches), an alternating branch, and a directed hazard test that exercises every forwarding path.
+the cycle count against~(\ref{eq:cycles}): 6936 checks, all passing; a separate testbench checks
+the ALU with corner cases and 800 random vectors. Eight programs were used: a nested loop, an
+array sum (load-use stalls), bubble sort, xorshift parity and maximum search (data-dependent
+branches), Fibonacci, an alternating branch, and a directed hazard test that exercises every
+forwarding path.
 
 \begin{figure*}[t]
 \centering
@@ -509,8 +512,8 @@ from the RTL, but the 100\,\% branch density makes them an upper bound on the pe
 a CPI for real programs.
 
 \textbf{Measured CPI on the processor.} Table~\ref{tab:cpu} and Fig.~\ref{fig:cpu_cpi} give the CPI
-measured by the hardware counters. Over all programs the CPI falls from 1.403 (static) to 1.185
-(1-bit) and 1.147 (2-bit), a speed-up of 1.22$\times$ for the 2-bit unit. The nested loop
+measured by the hardware counters. Over all programs the CPI falls from 1.395 (static) to 1.172
+(1-bit) and 1.140 (2-bit), a speed-up of 1.22$\times$ for the 2-bit unit. The nested loop
 reproduces the trace study exactly (22 and 13 mispredictions, 81.43\,\% 2-bit accuracy), which
 links the two halves of the project. On the alternating program the 2-bit predictor clearly beats
 the 1-bit one, unlike in the synthetic trace: here the pattern starts with \emph{not taken}, so the
@@ -536,8 +539,10 @@ bubble\_sort     & 550 & 153 & 1.373 & 1.231 & \textbf{1.184} \\
 xorshift\_parity & 680 & 128 & 1.282 & \textbf{1.109} & 1.112 \\
 alternating      & 227 & 100 & 1.714 & 1.388 & \textbf{1.220} \\
 hazards          & 36  & 2   & 1.250 & 1.250 & 1.250 \\
+fibonacci        & 136 & 18  & 1.279 & \textbf{1.059} & \textbf{1.059} \\
+max\_search      & 259 & 46  & 1.390 & \textbf{1.127} & \textbf{1.127} \\
 \midrule
-All programs     & 2110 & 517 & 1.403 & 1.185 & \textbf{1.147} \\
+All programs     & 2505 & 581 & 1.395 & 1.172 & \textbf{1.140} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -567,11 +572,11 @@ history and \texttt{docs/CONTRIBUTIONS.md} record the individual contributions.
 \toprule
 Member & Responsibility \\
 \midrule
-Aaryan Krishna & Coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis, final validation \\
-Pratik Agade & Static and 1-bit predictors, Branch Target Buffer \\
-Raghvendra Singh & 2-bit predictor, Branch History Table, saturating update logic \\
-Vedant Satbhai & Self-checking testbenches, waveform verification, parameter-validation testbench and RTL index-bounds safety \\
-Vivek Kumar Raj & Branch traces, performance analysis, documentation and report integration \\
+Aaryan Krishna & Coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis; RV32I pipeline, assembler and ISS, processor and ALU testbenches, final validation \\
+Pratik Agade & Static and 1-bit predictors, Branch Target Buffer; Fibonacci benchmark program \\
+Raghvendra Singh & 2-bit predictor, Branch History Table, saturating update logic; maximum-search benchmark program \\
+Vedant Satbhai & Self-checking testbenches, waveform verification, parameter-validation testbench and RTL index-bounds safety; GitHub Actions continuous integration \\
+Vivek Kumar Raj & Branch traces, performance analysis, documentation and report integration; processor CPI analysis (branch fraction, flush penalty) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -586,7 +591,7 @@ testing. On identical traces the 2-bit saturating counter was the most accurate 
 loop-heavy, biased and mixed workloads, at a cost of 17 extra LUTs and 16 extra flip-flops over
 the 1-bit predictor, while alternating and aliased branches exposed the limits of local
 counters. Integrated into a five-stage RV32I pipeline and checked against an instruction-set
-simulator, the 2-bit unit lowered the measured CPI of six programs from 1.403 to 1.147.
+simulator, the 2-bit unit lowered the measured CPI of eight programs from 1.395 to 1.140.
 
 \textbf{Limitations.} The processor implements a subset of RV32I (no jumps, byte loads or
 multiplication) and the programs are small kernels rather than standard benchmarks. Only

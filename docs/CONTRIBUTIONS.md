@@ -7,13 +7,13 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 
 | Member | GitHub | Area of responsibility |
 |---|---|---|
-| Aaryan Krishna | [@aaryan-codes56](https://github.com/aaryan-codes56) | Project coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis, final validation |
-| Pratik Agade | [@PratikAgade](https://github.com/PratikAgade) | Static and 1-bit predictors, Branch Target Buffer |
-| Raghvendra Singh | [@23raghvendra](https://github.com/23raghvendra) | 2-bit saturating predictor, Branch History Table, update logic |
-| Vedant Satbhai | [@vedant21-ctr](https://github.com/vedant21-ctr) | Testbenches and waveform verification, RTL parameter validation and index bounds safety, parameter validation testbench |
-| Vivek Kumar Raj | [@viveeeeek13](https://github.com/viveeeeek13) | Branch traces, performance analysis, documentation and report |
+| Aaryan Krishna | [@aaryan-codes56](https://github.com/aaryan-codes56) | Project coordination, architecture, top-level integration, prediction control and misprediction unit, synthesis, RV32I pipeline (Phase II), final validation |
+| Pratik Agade | [@PratikAgade](https://github.com/PratikAgade) | Static and 1-bit predictors, Branch Target Buffer, Fibonacci benchmark |
+| Raghvendra Singh | [@23raghvendra](https://github.com/23raghvendra) | 2-bit saturating predictor, Branch History Table, update logic, maximum-search benchmark |
+| Vedant Satbhai | [@vedant21-ctr](https://github.com/vedant21-ctr) | Testbenches and waveform verification, RTL parameter validation and index bounds safety, parameter validation testbench, continuous integration |
+| Vivek Kumar Raj | [@viveeeeek13](https://github.com/viveeeeek13) | Branch traces, performance analysis, processor CPI analysis, documentation and report |
 
-## Commit record
+## Phase I commit record
 
 | Member | Commit | Contribution |
 |---|---|---|
@@ -24,3 +24,15 @@ Saturating Predictors (Project 5, Modern Computer Architecture)
 | Vedant Satbhai | [b4822bd](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/b4822bd) | RTL parameter validation and index bounds safety in BHT, BTB, and top-level modules; parameter validation testbench `tb_parameter_validation` (35 checks; full suite 3,317 checks, all passing) |
 | Vedant Satbhai | [d55d8e6](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/d55d8e6) | README title edit |
 | Vedant Satbhai | [12b3d92](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/12b3d92) | Waveform verification figures embedded in `docs/TESTING.md` |
+
+## Phase II commit record (RV32I processor)
+
+| Member | Commit | Contribution |
+|---|---|---|
+| Aaryan Krishna | [654ae4b](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/654ae4b) ... [a59a4f1](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/a59a4f1) (5 commits) | 5-stage RV32I pipeline with the DBPU, assembler and reference ISS, six benchmark programs, processor system test (`tb_rv32_pipeline`), CPU analysis and synthesis, documentation and report |
+| Vedant Satbhai | [6cedbdf](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/6cedbdf) | GitHub Actions continuous integration: runs all testbenches, mutation tests and the results pipeline on every push |
+| Raghvendra Singh | [18ebc19](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/18ebc19) | Maximum-search benchmark program (`programs/max_search.s`, data-dependent branch) |
+| Pratik Agade | [5fa3fe8](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/5fa3fe8) | Fibonacci benchmark program (`programs/fibonacci.s`) |
+| Vivek Kumar Raj | [0baeb6e](https://github.com/aaryan-codes56/dynamic-branch-prediction-unit/commit/0baeb6e) | Branch fraction and flush-penalty columns in the processor CPI analysis |
+| Aaryan Krishna | (this update) | ALU unit testbench (`tb_rv32_alu`), final results with all eight programs |
+
