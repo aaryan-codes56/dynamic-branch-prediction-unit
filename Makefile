@@ -6,6 +6,8 @@
 #   make sim TB=tb_two_bit_predictor        run one testbench
 #   make wave TB=tb_two_bit_predictor       run one testbench + open GTKWave
 #   make traces      regenerate the branch traces (deterministic)
+#   make programs    assemble programs/*.s and compute reference results (ISS)
+#   make cpu         run all programs on the 5-stage RV32I CPU + CPI analysis
 #   make results     trace sims + BHT sweep + pipelined runs + analysis/plots
 #   make waves       render waveform PNGs from the VCD files (matplotlib)
 #   make synth       Yosys synthesis of all three predictor configurations
@@ -25,7 +27,7 @@ SWEEP_TRACES := mixed_trace aliasing_trace
 SWEEP_SIZES  := 2 4 8 16 32 64
 RES      := analysis/results
 
-.PHONY: all test sim wave traces sim-traces sweep pipeline analysis results waves synth report clean
+.PHONY: all test sim wave traces programs cpu sim-traces sweep pipeline analysis results waves synth report clean
 
 all: test results waves synth
 
@@ -40,6 +42,16 @@ wave:
 
 traces:
 	$(PYTHON) traces/generate_traces.py
+
+programs:
+	$(PYTHON) scripts/build_programs.py
+
+# Phase II: run every program on the pipeline with each predictor, then analyse
+cpu: programs
+	@mkdir -p build $(RES)
+	$(IVERILOG) -g2005 -Wall -o build/tb_rv32_pipeline testbench/tb_rv32_pipeline.v $(RTL)
+	$(VVP) -n build/tb_rv32_pipeline +OUT=$(RES)/cpu_results.csv
+	$(PYTHON) analysis/cpu_analysis.py
 
 build/tb_trace_runner: testbench/tb_trace_runner.v $(RTL)
 	@mkdir -p build
@@ -81,7 +93,7 @@ pipeline: build/tb_branch_prediction_top
 analysis:
 	$(PYTHON) analysis/performance_analysis.py
 
-results: sim-traces sweep pipeline analysis
+results: sim-traces sweep pipeline analysis cpu
 
 waves: test sim-traces
 	$(PYTHON) scripts/vcd_to_png.py
@@ -93,4 +105,4 @@ report:
 	cd reports && $(TECTONIC) IEEE_Project_Report.tex
 
 clean:
-	rm -rf build simulation/logs simulation/waveforms/*.vcd
+	rm -rf build programs/build simulation/logs simulation/waveforms/*.vcd

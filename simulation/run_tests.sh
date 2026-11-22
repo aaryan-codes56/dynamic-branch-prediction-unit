@@ -13,9 +13,13 @@ IVERILOG=${IVERILOG:-iverilog}
 VVP=${VVP:-vvp}
 TESTS="tb_static_predictor tb_one_bit_predictor tb_two_bit_predictor \
        tb_branch_history_table tb_branch_target_buffer tb_misprediction \
-       tb_branch_prediction_top tb_parameter_validation"
+       tb_branch_prediction_top tb_parameter_validation tb_rv32_pipeline"
 
-mkdir -p build simulation/logs simulation/waveforms
+mkdir -p build simulation/logs simulation/waveforms analysis/results
+# assemble the RV32I programs used by tb_rv32_pipeline (needs python3)
+if ! python3 scripts/build_programs.py > simulation/logs/build_programs.log 2>&1; then
+    echo "ERROR: scripts/build_programs.py failed (see simulation/logs/build_programs.log)"; exit 1
+fi
 pass=0; fail=0
 printf "%-28s %-6s %s\n" "TESTBENCH" "RESULT" "DETAILS"
 printf "%-28s %-6s %s\n" "---------" "------" "-------"
