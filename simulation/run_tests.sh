@@ -13,7 +13,7 @@ IVERILOG=${IVERILOG:-iverilog}
 VVP=${VVP:-vvp}
 TESTS="tb_static_predictor tb_one_bit_predictor tb_two_bit_predictor \
        tb_branch_history_table tb_branch_target_buffer tb_misprediction \
-       tb_branch_prediction_top tb_parameter_validation tb_rv32_pipeline"
+       tb_branch_prediction_top tb_parameter_validation tb_rv32_pipeline tb_rv32_alu"
 
 mkdir -p build simulation/logs simulation/waveforms analysis/results
 # assemble the RV32I programs used by tb_rv32_pipeline (needs python3)
